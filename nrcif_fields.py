@@ -30,7 +30,7 @@ class TextField(CIFField):
     def __init__(self, name, width):
         self.name = name
         self.width = width
-        self.sql_type = "VARCHAR({})".format(width)
+        self.sql_type = "CHAR({})".format(width)
 
 
 class IntegerField(CIFField):
@@ -68,7 +68,7 @@ class SpareField(CIFField):
 class FlagField(CIFField):
     '''Represents a 1-char wide CIF field that must be one of a set of flags'''
 
-    sql_type = "TEXT"
+    sql_type = "CHAR(1)"
     py_type = str
 
     def __init__(self, name, flags):
@@ -78,7 +78,7 @@ class FlagField(CIFField):
 
     def read(self, text):
         if len(text) != 1 or not (text in self.flags):
-            raise ValueError("'{}' is not one of the allowed flags '{}'".format(text, self.flags))
+            raise ValueError("'{}' is not one of the allowed flags '{}' for field '{}'".format(text, self.flags, self.name))
         return text
 
 class TimeField(CIFField):
