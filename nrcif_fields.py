@@ -32,6 +32,16 @@ class TextField(CIFField):
         self.width = width
         self.sql_type = "CHAR({})".format(width)
 
+class VarTextField(CIFField):
+    '''Represents a CIF field simply stored as text'''
+
+    py_type = str
+
+    def __init__(self, name, width):
+        self.name = name
+        self.width = width
+        self.sql_type = "VARCHAR({})".format(width)
+
 
 class IntegerField(CIFField):
     '''Represents a CIF field simply stored as an integer'''

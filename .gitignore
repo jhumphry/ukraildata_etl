@@ -3,3 +3,4 @@
 *.geany
 *~
 samples/
+*.gen.sql
