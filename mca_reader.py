@@ -48,6 +48,8 @@ class MCA(object):
         self.context = dict()
         self.sql = dict()
         self.train_UID = None
+        self.date_runs_from = None
+        self.stp_indicator = None
         self.loc_order = None
         self.state = "Start_Of_File"
 
@@ -64,7 +66,7 @@ class MCA(object):
         self.sql['BS'] = "INSERT INTO mca.basic_schedule VALUES({})".format(bs_params)
 
         for i in ('LO', 'LI', 'CR', 'LT', 'LN'):
-            width = 2 + layouts[i].sql_width
+            width = 4 + layouts[i].sql_width
             tablename = layouts[i].name.lower().replace(" ", "_")
             params = ",".join(["%s" for x in range(1,width+1)])
             self.sql[i] = "INSERT INTO mca.{} VALUES({})".format(tablename, params)
@@ -109,15 +111,18 @@ class MCA(object):
         self.context["BX"] = [None] * layouts["BX"].sql_width
         self.context["TN"] = [None] * layouts["TN"].sql_width
 
+        self.train_UID = self.context["BS"][1]
+        self.date_runs_from = self.context["BS"][2]
+        self.stp_indicator = self.context["BS"][21]
+
         # If the BS record is a short-term cancellation of a permanent service
         # there will be no further details or any locations given, so the record
         # may just as well be posted immediately.
-        if self.context["BS"][21] == "C":
+        if self.stp_indicator == "C":
             self.cur.execute(self.sql["BS"], self.context["BS"] +
                                             self.context["BX"] +
                                             self.context["TN"])
 
-        self.train_UID = self.context["BS"][1]
         self.context["BX"] = [None] * layouts["BX"].sql_width
         self.context["TN"] = [None] * layouts["TN"].sql_width
 
@@ -131,24 +136,29 @@ class MCA(object):
                                         self.context["TN"])
 
         self.LOC_order = 0
-        self.cur.execute(self.sql["LO"], [self.train_UID, self.LOC_order] +
+        self.cur.execute(self.sql["LO"], [self.train_UID, self.date_runs_from,
+                                            self.stp_indicator, self.LOC_order] +
                                             self.context["LO"])
 
     def process_LI(self):
         self.LOC_order += 1
-        self.cur.execute(self.sql["LI"], [self.train_UID, self.LOC_order] +
+        self.cur.execute(self.sql["LI"], [self.train_UID, self.date_runs_from,
+                                            self.stp_indicator, self.LOC_order] +
                                             self.context["LI"])
     def process_CR(self):
-        self.cur.execute(self.sql["CR"], [self.train_UID, self.LOC_order] +
+        self.cur.execute(self.sql["CR"], [self.train_UID, self.date_runs_from,
+                                            self.stp_indicator, self.LOC_order] +
                                             self.context["CR"])
 
     def process_LT(self):
         self.LOC_order += 1
-        self.cur.execute(self.sql["LT"], [self.train_UID, self.LOC_order] +
+        self.cur.execute(self.sql["LT"], [self.train_UID, self.date_runs_from,
+                                            self.stp_indicator, self.LOC_order] +
                                             self.context["LT"])
 
     def process_LN(self):
-        self.cur.execute(self.sql["LN"], [self.train_UID, self.LOC_order] +
+        self.cur.execute(self.sql["LN"], [self.train_UID, self.date_runs_from,
+                                            self.stp_indicator, self.LOC_order] +
                                             self.context["LN"])
 
 class DummyCursor(object):

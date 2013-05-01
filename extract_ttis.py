@@ -52,8 +52,16 @@ with zipfile.ZipFile(args.TTIS,"r") as ttis , \
     if not args.no_mca:
         mca = mca_reader.MCA(cur)
         with contextlib.closing(ttis.open(ttis_files["MCA"], "r")) as mca_file:
+            counter = 0
+            print("Processing", end = "", flush = True)
             for record in mca_file:
                 mca.process(record.decode("ASCII"))
+                counter += 1
+                if counter == 100000:
+                    connection.commit()
+                    counter = 0
+                    print(".", end = "", flush = True)
+        print()
         connection.commit()
 
 connection.autocommit = True

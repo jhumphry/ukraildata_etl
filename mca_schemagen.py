@@ -22,7 +22,7 @@ print(layouts['TN'].generate_sql_ddl())
 
 print("\t);\n")
 
-print("ALTER TABLE basic_schedule ADD PRIMARY KEY(train_uid);\n")
+print("ALTER TABLE basic_schedule ADD PRIMARY KEY(train_uid, date_runs_from, stp_indicator);\n")
 
 print('''-- The LO, LI, CR, LT and LN tables all have a header added to relate
 -- them to the relevant train''')
@@ -30,10 +30,13 @@ print('''-- The LO, LI, CR, LT and LN tables all have a header added to relate
 route_template = '''
 CREATE TABLE {} (
 \ttrain_uid\t\tCHAR(6),
+\tdate_runs_from\tDATE,
+\tstp_indicator\tCHAR(1),
 \tloc_order\t\tINTEGER,'''
 route_pk = '''
-ALTER TABLE {0} ADD PRIMARY KEY (train_uid, loc_order);
-ALTER TABLE {0} ADD FOREIGN KEY (train_uid) REFERENCES basic_schedule (train_uid) DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE {0} ADD PRIMARY KEY (train_uid, date_runs_from, stp_indicator, loc_order);
+ALTER TABLE {0} ADD FOREIGN KEY (train_uid, date_runs_from, stp_indicator)
+    REFERENCES basic_schedule (train_uid, date_runs_from, stp_indicator) DEFERRABLE;
 '''
 
 for i in ('LO', 'LI', 'CR', 'LT', 'LN'):
@@ -53,7 +56,5 @@ for i in ('AA', 'TI', 'TA', 'TD'):
     print("\t);\n")
     if i != 'AA':
         print(tiploc_pk.format(tablename))
-
-
 
 print('''SET search_path TO "$user",public;\n''')
