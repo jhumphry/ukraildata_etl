@@ -28,7 +28,9 @@ class MCA(object):
     allowedtransitions["TA"] = ("TA", "TD", "AA", "BS", "ZZ")
     allowedtransitions["TD"] = ("TD", "AA", "BS", "ZZ")
     allowedtransitions["AA"] = ("AA", "BS", "ZZ")
-    allowedtransitions["BS"] = ("BX", "TN", "LO")
+
+    # A BS giving an STP cancellation can be followed directly by another BS
+    allowedtransitions["BS"] = ("BS", "BX", "TN", "LO")
     allowedtransitions["BX"] = ("TN", "LO")
     allowedtransitions["TN"] = ("LO",)
     allowedtransitions["LO"] = ("LI", "CR", "LT")
@@ -103,6 +105,18 @@ class MCA(object):
         self.cur.execute(self.sql["AA"], self.context["AA"])
 
     def process_BS(self):
+
+        self.context["BX"] = [None] * layouts["BX"].sql_width
+        self.context["TN"] = [None] * layouts["TN"].sql_width
+
+        # If the BS record is a short-term cancellation of a permanent service
+        # there will be no further details or any locations given, so the record
+        # may just as well be posted immediately.
+        if self.context["BS"][21] == "C":
+            self.cur.execute(self.sql["BS"], self.context["BS"] +
+                                            self.context["BX"] +
+                                            self.context["TN"])
+
         self.train_UID = self.context["BS"][1]
         self.context["BX"] = [None] * layouts["BX"].sql_width
         self.context["TN"] = [None] * layouts["TN"].sql_width
