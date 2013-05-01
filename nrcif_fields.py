@@ -49,6 +49,18 @@ class IntegerField(CIFField):
     sql_type = "INTEGER"
     py_type = int
 
+    def __init__(self, name, width, optional = False):
+        self.name = name
+        self.width = width
+        self.optional = optional
+
+    def read(self, text):
+        if self.optional and text.isspace():
+            return None
+        else:
+            return int(text)
+
+
 class EnforceField(CIFField):
     '''Represents a CIF field that must match a template exactly'''
 
@@ -103,7 +115,7 @@ class TimeField(CIFField):
         self.optional = optional
 
     def read(self, text):
-        if self.optional and text == "    ":
+        if self.optional and text.isspace():
             return None
 
         if len(text)!= 4 or not text.isdecimal():
@@ -124,7 +136,7 @@ class TimeHField(CIFField):
         self.optional = optional
 
     def read(self, text):
-        if self.optional and text == "     ":
+        if self.optional and text.isspace():
             return None
 
         if len(text)!= 5 or not text[0:4].isdecimal():
