@@ -36,15 +36,11 @@ for i in ('LO', 'LI', 'CR', 'LT', 'LN'):
     print(layouts[i].generate_sql_ddl())
     print("\t);\n")
 
-print("CREATE TABLE associations (")
-print(layouts['AA'].generate_sql_ddl())
-print("\t);\n")
+normal_template = "CREATE TABLE {} ("
 
-tiploc_template = "CREATE TABLE {} ("
-
-for i in ('TI', 'TA', 'TD'):
+for i in ('AA', 'TI', 'TA', 'TD'):
     tablename = layouts[i].name.lower().replace(" ", "_")
-    print(tiploc_template.format(tablename))
+    print(normal_template.format(tablename))
     print(layouts[i].generate_sql_ddl())
     print("\t);\n")
 
