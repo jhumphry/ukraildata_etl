@@ -22,26 +22,38 @@ print(layouts['TN'].generate_sql_ddl())
 
 print("\t);\n")
 
+print("ALTER TABLE basic_schedule ADD PRIMARY KEY(train_uid);\n")
+
 print('''-- The LO, LI, CR, LT and LN tables all have a header added to relate
 -- them to the relevant train''')
 
-route_template ='''
+route_template = '''
 CREATE TABLE {} (
-\ttrain_UID\t\tCHAR(6),
+\ttrain_uid\t\tCHAR(6),
 \tloc_order\t\tINTEGER,'''
+route_pk = '''
+ALTER TABLE {0} ADD PRIMARY KEY (train_uid, loc_order);
+ALTER TABLE {0} ADD FOREIGN KEY (train_uid) REFERENCES basic_schedule (train_uid) DEFERRABLE INITIALLY DEFERRED;
+'''
 
 for i in ('LO', 'LI', 'CR', 'LT', 'LN'):
     tablename = layouts[i].name.lower().replace(" ", "_")
     print(route_template.format(tablename))
     print(layouts[i].generate_sql_ddl())
     print("\t);\n")
+    print(route_pk.format(tablename))
 
 normal_template = "CREATE TABLE {} ("
+tiploc_pk = "ALTER TABLE {} ADD PRIMARY KEY (tiploc_code);\n"
 
 for i in ('AA', 'TI', 'TA', 'TD'):
     tablename = layouts[i].name.lower().replace(" ", "_")
     print(normal_template.format(tablename))
     print(layouts[i].generate_sql_ddl())
     print("\t);\n")
+    if i != 'AA':
+        print(tiploc_pk.format(tablename))
+
+
 
 print('''SET search_path TO "$user",public;\n''')
