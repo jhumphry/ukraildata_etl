@@ -15,6 +15,7 @@ class CIFRecord(object):
         self.name = name
         self.fields = fields
         self.width = sum( (x.width for x in self.fields) )
+        self.sql_width = sum ( (1 for x in self.fields if x.sql_type) )
 
     def read(self, text):
         '''Convert a fixed-format record into a list of Python values'''
@@ -24,7 +25,7 @@ class CIFRecord(object):
 
         for field in self.fields:
             t = field.read(text[index:index+field.width])
-            if t != None:
+            if field.sql_type != None:
                 result.append(t)
             index += field.width
 
@@ -38,7 +39,7 @@ class CIFRecord(object):
 
         for field in self.fields:
             t = field.read(text[index:index+field.width])
-            if t != None:
+            if field.sql_type != None:
                 result[field.name] = t
             index += field.width
 

@@ -84,9 +84,9 @@ layouts["LO"] = CIFRecord("Origin Location", (
 layouts["LI"] = CIFRecord("Intermediate Location", (
                             EnforceField("Record Identity", "LI"),
                             TextField("Location", 8),
-                            TimeHField("Scheduled Arrival"),
-                            TimeHField("Scheduled Departure"),
-                            TimeHField("Scheduled Pass"),
+                            TimeHField("Scheduled Arrival", optional = True),
+                            TimeHField("Scheduled Departure", optional = True),
+                            TimeHField("Scheduled Pass", optional = True),
                             TimeField("Public Arrival"),
                             TimeField("Public Departure"),
                             TextField("Platform", 3),

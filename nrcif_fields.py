@@ -97,12 +97,15 @@ class TimeField(CIFField):
     sql_type = "TIME WITHOUT TIME ZONE"
     py_type = datetime.time
 
-    def __init__(self, name):
+    def __init__(self, name, optional = False):
         self.name = name
         self.width = 4
+        self.optional = optional
 
-    @classmethod
-    def read(cls, text):
+    def read(self, text):
+        if self.optional and text == "    ":
+            return None
+
         if len(text)!= 4 or not text.isdecimal():
             raise ValueError(text + " is not a 4-digit HHMM time")
 
@@ -115,12 +118,15 @@ class TimeHField(CIFField):
     sql_type = "TIME WITHOUT TIME ZONE"
     py_type = datetime.time
 
-    def __init__(self, name):
+    def __init__(self, name, optional = False):
         self.name = name
         self.width = 5
+        self.optional = optional
 
-    @classmethod
-    def read(cls, text):
+    def read(self, text):
+        if self.optional and text == "     ":
+            return None
+
         if len(text)!= 5 or not text[0:4].isdecimal():
             raise ValueError(text + " is not a 5-digit HHMM time with optional H")
 
