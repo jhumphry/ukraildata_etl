@@ -21,6 +21,12 @@ class CIFReader(object):
     allowedtransitions = dict()
     allowedtransitions["Start_Of_File"] = (None,)
 
+    # Which part of a record gives the type of the record?
+    rslice = slice(0,2)
+
+    # How wide is a standard record (yes, it varies...)
+    rwidth = 80
+
     # Layouts gives a dict of CIFRecords keyed on the first two letters of the
     # record that specify the record type.
     layouts = dict()
@@ -59,10 +65,10 @@ class CIFReader(object):
         defined in subclasses.'''
 
         record = record.replace("\n", " ")
-        if len(record) < 80:
-            record = record + " " * (80-len(record))
+        if len(record) < self.rwidth:
+            record = record + " " * (self.rwidth-len(record))
 
-        rtype = record[0:2]
+        rtype = record[self.rslice]
         if rtype not in self.allowedtransitions[self.state]:
             raise UnexpectedCIFRecord("Unexpected '{0}' record following '{1}' record".format(rtype, self.state))
         self.state = rtype
