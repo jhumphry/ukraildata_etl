@@ -118,11 +118,7 @@ class TimeField(CIFField):
         if self.optional and text.isspace():
             return None
 
-        if len(text)!= 4 or not text.isdecimal():
-            raise ValueError(text + " is not a 4-digit HHMM time")
-
-        h, m = int(text[0:2]), int(text[2:4])
-        return datetime.time(hour = h, minute = m)
+        return datetime.time(hour = int(text[0:2]), minute = int(text[2:4]))
 
 class TimeHField(CIFField):
     '''Represents a time in HHMM format with optional additional H for a half-minute'''
@@ -139,14 +135,10 @@ class TimeHField(CIFField):
         if self.optional and text.isspace():
             return None
 
-        if len(text)!= 5 or not text[0:4].isdecimal():
-            raise ValueError(text + " is not a 5-digit HHMM time with optional H")
-
-        h, m = int(text[0:2]), int(text[2:4])
         if text[4] == 'H':
-            return datetime.time(hour = h, minute = m, second = 30)
+            return datetime.time(hour = int(text[0:2]), minute = int(text[2:4]), second = 30)
         else:
-            return datetime.time(hour = h, minute = m, second = 0)
+            return datetime.time(hour = int(text[0:2]), minute = int(text[2:4]), second = 0)
 
 class DDMMYYDateField(CIFField):
     '''Represents a date in the DDMMYY format with Y2K munging'''
@@ -160,10 +152,10 @@ class DDMMYYDateField(CIFField):
 
     @classmethod
     def read(cls, text):
-        if len(text)!= 6 or not text.isdecimal():
-            raise ValueError(text + " is not a 6-digit DDMMYY date")
+
         if text == "999999":
             return datetime.date.max
+
         d, m, y = int(text[0:2]), int(text[2:4]), int(text[4:6])
         if y >= 60:
             y += 1900
@@ -183,10 +175,10 @@ class YYMMDDDateField(CIFField):
 
     @classmethod
     def read(cls, text):
-        if len(text)!= 6 or not text.isdecimal():
-            raise ValueError(text + " is not a 6-digit YYMMDD date")
+
         if text == "999999":
             return datetime.date.max
+
         y, m, d = int(text[0:2]), int(text[2:4]), int(text[4:6])
         if y >= 60:
             y += 1900

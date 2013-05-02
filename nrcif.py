@@ -78,7 +78,7 @@ class CIFRecord(object):
 
     def __init__(self, name, fields):
         self.name = name
-        self.fields = fields
+        self.fields = list(fields)
         self.width = sum( (x.width for x in self.fields) )
         self.sql_width = sum ( (1 for x in self.fields if x.sql_type) )
 
