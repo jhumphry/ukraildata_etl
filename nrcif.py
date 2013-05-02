@@ -8,6 +8,52 @@ discrepancies between the available public documentation of the format and
 the actual files, this module provide basic CIF tools that will need to be
 customised for each source of CIF files.'''
 
+
+class UnexpectedCIFRecord(Exception):
+    pass
+
+class CIFReader(object):
+    '''A state machine with side-effects that forms a base for handling CIF files.'''
+
+    # The following is a dictionary of tuples of record types allowed after a
+    # given record type.
+
+    allowedtransitions = dict()
+    allowedtransitions["Start_Of_File"] = (None,)
+
+    # Layouts gives a dict of CIFRecords keyed on the first two letters of the
+    # record that specify the record type.
+    layouts = dict()
+
+    schema = "public"
+
+    def __init__(self, cur):
+        '''Requires a DB API cursor to the database that will contain the data'''
+
+        self.cur = cur
+        self.context = dict()
+        self.sql = dict()
+        self.state = "Start_Of_File"
+
+    def process(self, record):
+        '''Process a record and call any specialist handlers that may have been
+        defined in subclasses.'''
+
+        record = record.replace("\n", " ")
+        if len(record) < 80:
+            record = record + " " * (80-len(record))
+
+        rtype = record[0:2]
+        if rtype not in self.allowedtransitions[self.state]:
+            raise UnexpectedCIFRecord("Unexpected '{0}' record following '{1}' record".format(rtype, self.state))
+        self.state = rtype
+
+        self.context[rtype] = self.layouts[rtype].read(record)
+        try:
+            self.__getattribute__("process_"+rtype)()
+        except AttributeError:
+            pass
+
 class CIFRecord(object):
     '''A class representing a record of a fixed-format CIF file'''
 
@@ -61,3 +107,9 @@ class CIFRecord(object):
                                                 field.sql_type)
         return result
 
+
+class DummyCursor(object):
+    '''A dummy cursor object for use as a mock when testing CIF readers'''
+
+    def execute(self, sql, params = None):
+        print("Dummy cursor executed SQL: '{}' with params '{}'".format(sql, repr(params)))

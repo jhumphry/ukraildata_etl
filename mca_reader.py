@@ -4,22 +4,18 @@
 
 This module reads data from an MCA file from ATOC containing timetable
 information for UK rail journeys and inserts it into a database. The module has
-to be provided with a cursor initially, and then fed with lines/records one at
-a time.'''
+to be provided with a databae cursor initially, and then fed with lines/records
+one at a time.'''
 
-from nrcif_records import layouts
+import nrcif, nrcif_records
 
-class UnexpectedCIFRecord(Exception):
-    pass
-
-class MCA(object):
+class MCA(nrcif.CIFReader):
     '''A state machine with side-effects that handles MCA files.'''
 
-    # the following is a dictionary of tuples of record types allowed after a
-    # given record type. Note that there is an issue with Location Note (LN)
-    # records in that the allowed record AFTER the LN depends on the type of
-    # record BEFORE the LN, which is difficult to validate with this approach.
-    # Luckily LN aren't used any more - at least according to the documentation.
+    # Note that there is an issue with Location Note (LN) records in that the
+    # allowed record AFTER the LN depends on the type of record BEFORE the LN,
+    # which is difficult to validate with this approach. Luckily LN aren't used
+    # any more - at least according to the documentation.
 
     allowedtransitions = dict()
     allowedtransitions["Start_Of_File"] = ("HD",)
@@ -28,7 +24,6 @@ class MCA(object):
     allowedtransitions["TA"] = ("TA", "TD", "AA", "BS", "ZZ")
     allowedtransitions["TD"] = ("TD", "AA", "BS", "ZZ")
     allowedtransitions["AA"] = ("AA", "BS", "ZZ")
-
     # A BS giving an STP cancellation can be followed directly by another BS
     allowedtransitions["BS"] = ("BS", "BX", "TN", "LO")
     allowedtransitions["BX"] = ("TN", "LO")
@@ -40,18 +35,21 @@ class MCA(object):
     allowedtransitions["LT"] = ("BS", "ZZ")
     allowedtransitions["ZZ"] = (None,)
 
+    layouts = nrcif_records.layouts
+
+    schema = "mca"
+
     def __init__(self, cur):
         '''Requires a DB API cursor to the database that will contain the data'''
 
-        self.cur = cur
-
-        self.context = dict()
-        self.sql = dict()
+        super().__init__(cur)
         self.train_UID = None
         self.date_runs_from = None
         self.stp_indicator = None
         self.loc_order = None
-        self.state = "Start_Of_File"
+
+        # for typing convenience
+        layouts = self.layouts
 
         # The following ensures all context is valid for insertion into the
         # database, even if it is just a row of NULL/None
@@ -77,23 +75,6 @@ class MCA(object):
             params = ",".join(["%s" for x in range(1,width+1)])
             self.sql[i] = "INSERT INTO mca.{} VALUES({})".format(tablename, params)
 
-    def process(self, record):
-        '''Process a record'''
-
-        record = record.replace("\n", " ")
-        if len(record) < 80:
-            record = record + " " * (80-len(record))
-
-        rtype = record[0:2]
-        if rtype not in self.allowedtransitions[self.state]:
-            raise UnexpectedCIFRecord("Unexpected '{0}' record following '{1}' record".format(rtype, self.state))
-        self.state = rtype
-        self.context[rtype] = layouts[rtype].read(record)
-        try:
-            self.__getattribute__("process_"+rtype)()
-        except AttributeError:
-            pass
-
     def process_TI(self):
         self.cur.execute(self.sql["TI"], self.context["TI"])
 
@@ -108,8 +89,8 @@ class MCA(object):
 
     def process_BS(self):
 
-        self.context["BX"] = [None] * layouts["BX"].sql_width
-        self.context["TN"] = [None] * layouts["TN"].sql_width
+        self.context["BX"] = [None] * self.layouts["BX"].sql_width
+        self.context["TN"] = [None] * self.layouts["TN"].sql_width
 
         self.train_UID = self.context["BS"][1]
         self.date_runs_from = self.context["BS"][2]
@@ -122,9 +103,6 @@ class MCA(object):
             self.cur.execute(self.sql["BS"], self.context["BS"] +
                                             self.context["BX"] +
                                             self.context["TN"])
-
-        self.context["BX"] = [None] * layouts["BX"].sql_width
-        self.context["TN"] = [None] * layouts["TN"].sql_width
 
     def process_LO(self):
 
@@ -161,17 +139,12 @@ class MCA(object):
                                             self.stp_indicator, self.LOC_order] +
                                             self.context["LN"])
 
-class DummyCursor(object):
-    def execute(self, sql, params = None):
-        print("Dummy cursor executed SQL: '{}' with params '{}'".format(sql, repr(params)))
-
-
 def main():
     import sys
     if len(sys.argv) != 2:
         print("When called as a script, needs to be provided with an MCA file to process")
         sys.exit(1)
-    cur = DummyCursor()
+    cur = nrcif.DummyCursor()
     mca = MCA(cur)
     with open(sys.argv[1], 'r') as fp:
         for line in fp:
