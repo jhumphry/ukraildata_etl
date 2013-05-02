@@ -3,7 +3,7 @@
 ''' extract_ttis.py - a utility for extracting data from data.atoc.org TTIS
     downloads into a Postgresql database'''
 
-import mca_reader
+import mca_reader, msn_reader
 
 import psycopg2
 
@@ -12,6 +12,8 @@ import sys, os, argparse, zipfile, contextlib
 parser = argparse.ArgumentParser()
 parser.add_argument("TTIS", help = "The TTIS .zip file containing the required data")
 parser.add_argument("--no-mca", help = "Don't parse the provided main timetable data",
+                    action = "store_true", default = False)
+parser.add_argument("--no-msn", help = "Don't parse the provided main station data",
                     action = "store_true", default = False)
 
 parser_db = parser.add_argument_group("database arguments")
@@ -56,6 +58,25 @@ with zipfile.ZipFile(args.TTIS,"r") as ttis , \
             print("Processing", end = "", flush = True)
             for record in mca_file:
                 mca.process(record.decode("ASCII"))
+                counter += 1
+                if counter == 100000:
+                    connection.commit()
+                    counter = 0
+                    print(".", end = "", flush = True)
+        print()
+        connection.commit()
+
+    if not args.no_msn:
+        msn = msn_reader.MSN(cur)
+
+        fpp = ttis.open(ttis_files["MSN"], "r")
+        fpp.readline() # Discard the header
+
+        with contextlib.closing(fpp) as msn_file:
+            counter = 0
+            print("Processing", end = "", flush = True)
+            for record in msn_file:
+                msn.process(record.decode("ASCII"))
                 counter += 1
                 if counter == 100000:
                     connection.commit()

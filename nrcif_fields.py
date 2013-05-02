@@ -228,3 +228,24 @@ class ActivityField(CIFField):
         for i in range(0,12,2):
             result.append(text[i:i+2])
         return result
+
+class RouteingGroupField(CIFField):
+    '''Represents the Routeing Group field, showing which stops are grouped
+    together for fare purposes'''
+
+    sql_type = "CHARACTER(3) ARRAY[10]"
+    py_type = list
+
+    def __init__(self, name):
+        self.name = name
+        self.width = 40
+
+    @classmethod
+    def read(cls, text):
+        if len(text)!= 40:
+            raise ValueError(text + " is not a 40 char Activity field")
+        result = []
+        for i in range(0,40,4):
+            result.append(text[i:i+3])
+        return result
+
