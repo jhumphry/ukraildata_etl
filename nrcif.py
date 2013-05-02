@@ -28,12 +28,31 @@ class CIFReader(object):
     schema = "public"
 
     def __init__(self, cur):
-        '''Requires a DB API cursor to the database that will contain the data'''
+        '''Requires a DB API cursor to the database contains the data'''
 
         self.cur = cur
         self.context = dict()
         self.sql = dict()
         self.state = "Start_Of_File"
+
+    def prepare_sql_insert(self, rtype, tablename, number_params = None):
+        '''Prepare a suitable SQL insert statement for record type rtype in
+        the schema self.schema, the table named tablename and with the specified
+        number of parameters (inferred from the record type if not specified.'''
+
+        if not number_params:
+            number_params = self.layouts[rtype].sql_width
+
+        sql_params = ",".join(["$"+str(x) for x in range(1,number_params+1)])
+        params = ",".join(["%s" for x in range(1,number_params+1)])
+
+        self.cur.execute('''PREPARE ins_{0}_{1} AS
+            INSERT INTO {0}.{1} VALUES({2});'''.format(self.schema,
+                                                        tablename,
+                                                        sql_params))
+        self.sql[rtype] = "EXECUTE ins_{0}_{1} ({2});".format(self.schema,
+                                                                tablename,
+                                                                params)
 
     def process(self, record):
         '''Process a record and call any specialist handlers that may have been

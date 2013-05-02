@@ -60,20 +60,16 @@ class MCA(nrcif.CIFReader):
         bs_width =  layouts['BS'].sql_width + \
                     layouts['BX'].sql_width + \
                     layouts['TN'].sql_width
-        bs_params = ",".join(["%s" for x in range(1,bs_width+1)])
-        self.sql['BS'] = "INSERT INTO mca.basic_schedule VALUES({})".format(bs_params)
+        self.prepare_sql_insert("BS", "basic_schedule", bs_width)
 
         for i in ('LO', 'LI', 'CR', 'LT', 'LN'):
             width = 4 + layouts[i].sql_width
             tablename = layouts[i].name.lower().replace(" ", "_")
-            params = ",".join(["%s" for x in range(1,width+1)])
-            self.sql[i] = "INSERT INTO mca.{} VALUES({})".format(tablename, params)
+            self.prepare_sql_insert(i, tablename, width)
 
         for i in ('AA', 'TI', 'TA', 'TD'):
-            width = layouts[i].sql_width
             tablename = layouts[i].name.lower().replace(" ", "_")
-            params = ",".join(["%s" for x in range(1,width+1)])
-            self.sql[i] = "INSERT INTO mca.{} VALUES({})".format(tablename, params)
+            self.prepare_sql_insert(i, tablename)
 
     def process_TI(self):
         self.cur.execute(self.sql["TI"], self.context["TI"])
