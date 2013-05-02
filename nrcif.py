@@ -21,6 +21,8 @@ class CIFReader(object):
     allowedtransitions = dict()
     allowedtransitions["Start_Of_File"] = (None,)
 
+    process_methods = dict()
+
     # Which part of a record gives the type of the record?
     rslice = slice(0,2)
 
@@ -40,6 +42,15 @@ class CIFReader(object):
         self.context = dict()
         self.sql = dict()
         self.state = "Start_Of_File"
+
+        # This code pre-builds a dict of any process_ZZ methods that have been
+        # added in sub-classes, to avoid having a try..except block in a
+        # critical path.
+        for i in self.allowedtransitions:
+            try:
+                self.process_methods[i] = self.__getattribute__("process_"+i)
+            except AttributeError:
+                pass
 
     def prepare_sql_insert(self, rtype, tablename, number_params = None):
         '''Prepare a suitable SQL insert statement for record type rtype in
@@ -71,13 +82,11 @@ class CIFReader(object):
         rtype = record[self.rslice]
         if rtype not in self.allowedtransitions[self.state]:
             raise UnexpectedCIFRecord("Unexpected '{0}' record following '{1}' record".format(rtype, self.state))
-        self.state = rtype
 
+        self.state = rtype
         self.context[rtype] = self.layouts[rtype].read(record)
-        try:
-            self.__getattribute__("process_"+rtype)()
-        except AttributeError:
-            pass
+        if rtype in self.process_methods:
+            self.process_methods[rtype]()
 
 class CIFRecord(object):
     '''A class representing a record of a fixed-format CIF file'''
