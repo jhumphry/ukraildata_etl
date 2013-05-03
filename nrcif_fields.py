@@ -43,6 +43,23 @@ class VarTextField(CIFField):
         self.sql_type = "VARCHAR({})".format(width)
 
 
+class VarTextChoiceField(CIFField):
+    '''Represents a CIF field stored as text that must be one of a set of
+    alternative choices.'''
+
+    py_type = str
+
+    def __init__(self, name, width, choices):
+        self.name = name
+        self.width = width
+        self.choices = frozenset(choices)
+        self.sql_type = "VARCHAR({})".format(width)
+
+    def read(self, text):
+        if text not in self.choices:
+            raise ValueError("{0} not one of permissable choices {1}".format(text, str(tuple(self.choices))))
+        return text
+
 class IntegerField(CIFField):
     '''Represents a CIF field simply stored as an integer'''
 
@@ -184,6 +201,21 @@ class YYMMDDDateField(CIFField):
             y += 1900
         else:
             y += 2000
+        return datetime.date(y, m, d)
+
+class DD_MM_YYYYDateField(CIFField):
+    '''Represents a date in the DD/MM/YYYY format'''
+
+    sql_type = "DATE"
+    py_type = datetime.date
+
+    def __init__(self, name):
+        self.name = name
+        self.width = 10
+
+    @classmethod
+    def read(cls, text):
+        d, m, y = int(text[0:2]), int(text[3:5]), int(text[6:10])
         return datetime.date(y, m, d)
 
 class DaysField(CIFField):

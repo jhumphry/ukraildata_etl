@@ -3,7 +3,7 @@
 ''' extract_ttis.py - a utility for extracting data from data.atoc.org TTIS
     downloads into a Postgresql database'''
 
-import mca_reader, ztr_reader, msn_reader, tsi_reader
+import mca_reader, ztr_reader, msn_reader, tsi_reader, alf_reader
 
 import psycopg2
 
@@ -18,6 +18,8 @@ parser.add_argument("--no-ztr", help = "Don't parse the provided Z-Trains (manua
 parser.add_argument("--no-msn", help = "Don't parse the provided main station data",
                     action = "store_true", default = False)
 parser.add_argument("--no-tsi", help = "Don't parse the provided TOC specific interchange data",
+                    action = "store_true", default = False)
+parser.add_argument("--no-alf", help = "Don't parse the provided Additional Fixed Link data",
                     action = "store_true", default = False)
 
 parser_db = parser.add_argument_group("database arguments")
@@ -112,6 +114,22 @@ with zipfile.ZipFile(args.TTIS,"r") as ttis , \
             print("Processing", end = "", flush = True)
             for record in tsi_file:
                 tsi.process(record.decode("ASCII"))
+                counter += 1
+                if counter == 100000:
+                    connection.commit()
+                    counter = 0
+                    print(".", end = "", flush = True)
+        print()
+        connection.commit()
+
+    if not args.no_alf:
+        alf = alf_reader.ALF(cur)
+
+        with contextlib.closing(ttis.open(ttis_files["ALF"], "r")) as alf_file:
+            counter = 0
+            print("Processing", end = "", flush = True)
+            for record in alf_file:
+                alf.process(record.decode("ASCII"))
                 counter += 1
                 if counter == 100000:
                     connection.commit()
