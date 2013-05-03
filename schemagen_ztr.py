@@ -4,16 +4,16 @@
 .ZTR timetable files. This is done dynamically to ensure it keeps in sync with
 the definitions in nrcif.py, ztr_reader.py and nrcif_fields.py'''
 
-from nrcif_records import layouts
+from nrcif.records import layouts
 
-import ztr_reader
+import nrcif.ztr_reader
 
 import argparse, contextlib
 
 SCHEMA = "ztr"
 
-layouts["HD"] = ztr_reader.reduced_hd
-layouts["BX"] = ztr_reader.reduced_bx
+layouts["HD"] = nrcif.ztr_reader.reduced_hd
+layouts["BX"] = nrcif.ztr_reader.reduced_bx
 
 parser = argparse.ArgumentParser()
 parser.add_argument("DDL", help = "The destination for the SQL DDL file (default schema_ztr_ddl.gen.sql)",

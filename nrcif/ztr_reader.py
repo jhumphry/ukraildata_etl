@@ -7,9 +7,9 @@ information for manual supplements to the rail timetable (ferries etc) and
 inserts it into a database. The module has to be provided with a database cursor
 initially, and then fed with lines/records one at a time.'''
 
-import nrcif, nrcif_records, mca_reader
+import nrcif, nrcif.records, nrcif.mca_reader
 
-from nrcif_fields import *
+from nrcif.fields import *
 from nrcif import CIFRecord
 
 reduced_hd = CIFRecord("Header Record", (
@@ -28,7 +28,7 @@ reduced_bx = CIFRecord("Basic Schedule Extra Details", (
                             SpareField("Spare", 57)
                             ))
 
-class ZTR(mca_reader.MCA):
+class ZTR(nrcif.mca_reader.MCA):
     '''An extension of the MCA reader to deal with the slightly cut-back
     ZTR format.'''
 

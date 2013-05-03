@@ -4,7 +4,7 @@
 .ALF additional fixed link files. This is done dynamically to ensure it keeps in
 sync with the definitions in nrcif.py, alf_reader.py and nrcif_fields.py'''
 
-from alf_reader import ALF
+from nrcif.alf_reader import ALF
 
 import argparse, contextlib
 

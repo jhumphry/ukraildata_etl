@@ -8,7 +8,7 @@ class Cursor(object):
         self.fp = fp
 
     def execute(self, sql, params = None):
-        self.fp.write("Dummy cursor executed SQL: '{}' with params '{}'\n".format(sql, repr(params)))
+        self.fp.write("Executed SQL: '{}' with params '{}'\n".format(sql, repr(params)))
 
     def close(self):
         pass

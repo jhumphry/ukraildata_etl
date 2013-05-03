@@ -1,4 +1,4 @@
-# nrcif.py
+# nrcif/__init__.py
 
 '''nrcif - A module to read the CIF format for loading into an SQL database
 

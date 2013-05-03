@@ -5,7 +5,7 @@
 This module defines the record types found in ATOC Master Station Names files as
 provided by data.atoc.org .'''
 
-from nrcif_fields import *
+from nrcif.fields import *
 from nrcif import CIFRecord
 
 # The following is a dictionary of standard MSN CIF record types, keyed by the

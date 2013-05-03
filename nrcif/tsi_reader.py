@@ -7,7 +7,7 @@ information on the interchange times between train companies at certain TOCs
 (for example, where a particular company has its own set of platforms at some
 distance from the others.'''
 
-from nrcif_fields import *
+from nrcif.fields import *
 
 class TSI(object):
     '''A simple hander for TSI files.'''

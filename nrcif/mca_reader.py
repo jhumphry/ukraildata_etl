@@ -7,7 +7,7 @@ information for UK rail journeys and inserts it into a database. The module has
 to be provided with a databae cursor initially, and then fed with lines/records
 one at a time.'''
 
-import nrcif, nrcif_records
+import nrcif, nrcif.records
 
 class MCA(nrcif.CIFReader):
     '''A state machine with side-effects that handles MCA files.'''
@@ -35,7 +35,7 @@ class MCA(nrcif.CIFReader):
     allowedtransitions["LT"] = set(("BS", "ZZ"))
     allowedtransitions["ZZ"] = set((None,))
 
-    layouts = nrcif_records.layouts
+    layouts = nrcif.records.layouts
 
     schema = "mca"
 

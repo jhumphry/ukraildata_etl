@@ -3,7 +3,8 @@
 ''' extract_ttis.py - a utility for extracting data from data.atoc.org TTIS
     downloads into a PostgreSQL database'''
 
-import mca_reader, ztr_reader, msn_reader, tsi_reader, alf_reader, mockdb
+import nrcif.mca_reader, nrcif.ztr_reader, nrcif.msn_reader
+import nrcif.tsi_reader, nrcif.alf_reader, mockdb
 
 import psycopg2
 
@@ -27,7 +28,7 @@ parser_no.add_argument("--no-alf", help = "Don't parse the provided Additional F
 parser_db = parser.add_argument_group("database arguments")
 parser_db.add_argument("--dry-run", help = "Dump output to a file rather than sending to the database",
                     nargs = "?", metavar = "LOG FILE", default = None, type=argparse.FileType("w"))
-parser_db.add_argument("--database", help = "PostgreSQL database to use",
+parser_db.add_argument("--database", help = "PostgreSQL database to use (default ukraildata)",
                     action = "store", default = "ukraildata")
 parser_db.add_argument("--user", help = "PostgreSQL user for upload",
                     action = "store", default = os.getlogin())
@@ -59,11 +60,11 @@ else:
                                         password = args.password)
 
 # job wanted?, job handling class, file extension, needs MSN header fix?
-jobs = ((args.no_mca, mca_reader.MCA, "MCA", False),
-        (args.no_ztr, ztr_reader.ZTR, "ZTR", False),
-        (args.no_msn, msn_reader.MSN, "MSN", True),
-        (args.no_tsi, tsi_reader.TSI, "TSI", False),
-        (args.no_alf, alf_reader.ALF, "ALF", False))
+jobs = ((args.no_mca, nrcif.mca_reader.MCA, "MCA", False),
+        (args.no_ztr, nrcif.ztr_reader.ZTR, "ZTR", False),
+        (args.no_msn, nrcif.msn_reader.MSN, "MSN", True),
+        (args.no_tsi, nrcif.tsi_reader.TSI, "TSI", False),
+        (args.no_alf, nrcif.alf_reader.ALF, "ALF", False))
 
 
 with zipfile.ZipFile(args.TTIS,"r") as ttis , \

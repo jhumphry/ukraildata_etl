@@ -4,7 +4,7 @@
 .ZTR timetable files. This is done dynamically to ensure it keeps in sync with
 the definitions in nrcif.py, tsi_reader.py and nrcif_fields.py'''
 
-import tsi_reader
+import nrcif.tsi_reader
 
 import argparse, contextlib
 
@@ -28,7 +28,7 @@ with contextlib.closing(args.DDL) as DDL:
     DDL.write("CREATE TABLE tsi (\n")
 
     first_field = False
-    for i in tsi_reader.TSI.layout:
+    for i in nrcif.tsi_reader.TSI.layout:
         if not first_field:
             first_field=True
         else:

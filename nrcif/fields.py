@@ -1,6 +1,6 @@
-# nrcif_fields.py
+# nrcif.fields.py
 
-'''nrcif_fields - Definition of the CIF format fields
+'''nrcif.fields - Definition of the CIF format fields
 
 This module defines the field types found in most National Rail CIF format files
 containing UK rail timetable data.'''

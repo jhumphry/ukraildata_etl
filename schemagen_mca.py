@@ -4,7 +4,7 @@
 .MCA timetable files. This is done dynamically to ensure it keeps in sync with
 the definitions in nrcif.py and nrcif_fields.py'''
 
-from nrcif_records import layouts
+from nrcif.records import layouts
 
 import argparse, contextlib
 

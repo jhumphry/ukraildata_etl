@@ -8,7 +8,7 @@ accessible by foot or tram.'''
 
 import collections
 
-from nrcif_fields import *
+from nrcif.fields import *
 
 class ALF(object):
     '''A simple hander for ALF files.'''

@@ -4,10 +4,10 @@
 
 This module reads data from an MSN file from ATOC containing station details for
 UK rail stations and inserts it into a database. The module has to be provided
-with a databae cursor initially, and then fed with lines/records one at a time.
+with a database cursor initially, and then fed with lines/records one at a time.
 '''
 
-import nrcif, msn_records
+import nrcif, nrcif.msn_records
 
 class MSN(nrcif.CIFReader):
     '''A state machine with side-effects that handles MSN files.'''
@@ -35,7 +35,7 @@ class MSN(nrcif.CIFReader):
 
     rwidth = 82
 
-    layouts = msn_records.layouts
+    layouts = nrcif.msn_records.layouts
 
     schema = "msn"
 
