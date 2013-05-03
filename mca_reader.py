@@ -18,22 +18,22 @@ class MCA(nrcif.CIFReader):
     # any more - at least according to the documentation.
 
     allowedtransitions = dict()
-    allowedtransitions["Start_Of_File"] = ("HD",)
-    allowedtransitions["HD"] = ("TI", "TA", "TD", "AA", "BS", "ZZ")
-    allowedtransitions["TI"] = ("TI", "TA", "TD", "AA", "BS", "ZZ")
-    allowedtransitions["TA"] = ("TA", "TD", "AA", "BS", "ZZ")
-    allowedtransitions["TD"] = ("TD", "AA", "BS", "ZZ")
-    allowedtransitions["AA"] = ("AA", "BS", "ZZ")
+    allowedtransitions["Start_Of_File"] = set(("HD",))
+    allowedtransitions["HD"] = set(("TI", "TA", "TD", "AA", "BS", "ZZ"))
+    allowedtransitions["TI"] = set(("TI", "TA", "TD", "AA", "BS", "ZZ"))
+    allowedtransitions["TA"] = set(("TA", "TD", "AA", "BS", "ZZ"))
+    allowedtransitions["TD"] = set(("TD", "AA", "BS", "ZZ"))
+    allowedtransitions["AA"] = set(("AA", "BS", "ZZ"))
     # A BS giving an STP cancellation can be followed directly by another BS
-    allowedtransitions["BS"] = ("BS", "BX", "TN", "LO")
-    allowedtransitions["BX"] = ("TN", "LO")
-    allowedtransitions["TN"] = ("LO",)
-    allowedtransitions["LO"] = ("LI", "CR", "LT")
-    allowedtransitions["LN"] = ("LI", "CR", "LT", "BS", "ZZ")
-    allowedtransitions["LI"] = ("LI", "CR", "LT")
-    allowedtransitions["CR"] = ("LI", "LT")
-    allowedtransitions["LT"] = ("BS", "ZZ")
-    allowedtransitions["ZZ"] = (None,)
+    allowedtransitions["BS"] = set(("BS", "BX", "TN", "LO"))
+    allowedtransitions["BX"] = set(("TN", "LO"))
+    allowedtransitions["TN"] = set(("LO",))
+    allowedtransitions["LO"] = set(("LI", "CR", "LT"))
+    allowedtransitions["LN"] = set(("LI", "CR", "LT", "BS", "ZZ"))
+    allowedtransitions["LI"] = set(("LI", "CR", "LT"))
+    allowedtransitions["CR"] = set(("LI", "LT"))
+    allowedtransitions["LT"] = set(("BS", "ZZ"))
+    allowedtransitions["ZZ"] = set((None,))
 
     layouts = nrcif_records.layouts
 

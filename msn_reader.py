@@ -13,23 +13,23 @@ class MSN(nrcif.CIFReader):
     '''A state machine with side-effects that handles MSN files.'''
 
     allowedtransitions = dict()
-    allowedtransitions["Start_Of_File"] = ("A",)
-    allowedtransitions["A"] = ("A", "B", "C", "L")
-    allowedtransitions["B"] = ("A", "B", "C", "L")
-    allowedtransitions["C"] = ("A", "C", "L")
-    allowedtransitions["L"] = ("L", "G", "R", "V", "Z", "0", "M", "-", "E")
-    allowedtransitions["G"] = ("G", "R", "V", "Z", "0", "M", "-", "E")
-    allowedtransitions["R"] = ("R", "V", "Z", "0", "M", "-", "E")
-    allowedtransitions["V"] = ("V", "Z", "0", "M", "-", "E")
+    allowedtransitions["Start_Of_File"] = set(("A",))
+    allowedtransitions["A"] = set(("A", "B", "C", "L"))
+    allowedtransitions["B"] = set(("A", "B", "C", "L"))
+    allowedtransitions["C"] = set(("A", "C", "L"))
+    allowedtransitions["L"] = set(("L", "G", "R", "V", "Z", "0", "M", "-", "E"))
+    allowedtransitions["G"] = set(("G", "R", "V", "Z", "0", "M", "-", "E"))
+    allowedtransitions["R"] = set(("R", "V", "Z", "0", "M", "-", "E"))
+    allowedtransitions["V"] = set(("V", "Z", "0", "M", "-", "E"))
 
     # I'm not going to worry about which order the trailers come in, or if they
     # are repeated...
-    allowedtransitions["Z"] = ("Z", "0", "M", "-", " ", "E")
-    allowedtransitions["0"] = ("Z", "0", "M", "-", " ", "E")
-    allowedtransitions["M"] = ("Z", "0", "M", "-", " ", "E")
-    allowedtransitions["-"] = ("Z", "0", "M", "-", " ", "E")
-    allowedtransitions[" "] = ("Z", "0", "M", "-", " ", "E")
-    allowedtransitions["E"] = (None,)
+    allowedtransitions["Z"] = set(("Z", "0", "M", "-", " ", "E"))
+    allowedtransitions["0"] = set(("Z", "0", "M", "-", " ", "E"))
+    allowedtransitions["M"] = set(("Z", "0", "M", "-", " ", "E"))
+    allowedtransitions["-"] = set(("Z", "0", "M", "-", " ", "E"))
+    allowedtransitions[" "] = set(("Z", "0", "M", "-", " ", "E"))
+    allowedtransitions["E"] = set((None,))
 
     rslice = slice(0,1)
 

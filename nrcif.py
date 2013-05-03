@@ -15,7 +15,7 @@ class UnexpectedCIFRecord(Exception):
 class CIFReader(object):
     '''A state machine with side-effects that forms a base for handling CIF files.'''
 
-    # The following is a dictionary of tuples of record types allowed after a
+    # The following is a dictionary of sets of record types allowed after a
     # given record type.
 
     allowedtransitions = dict()
