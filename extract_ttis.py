@@ -1,5 +1,23 @@
 # extract_ttis.py
 
+# Copyright 2013, James Humphry
+
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#
+
 ''' extract_ttis.py - a utility for extracting data from data.atoc.org TTIS
     downloads into a PostgreSQL database'''
 
@@ -89,7 +107,6 @@ with zipfile.ZipFile(args.TTIS,"r") as ttis , \
                     handling_obj.process(record.decode("ASCII"))
                     counter += 1
                     if counter == 100000:
-                        connection.commit()
                         counter = 0
                         print(".", end = "", flush = True)
             print()
