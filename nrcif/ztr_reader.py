@@ -33,16 +33,12 @@ reduced_hd = CIFRecord("Header Record", (
                             SpareField("Spare", 79) # All other fields seem to be missing
                             ))
 
-reduced_bx = CIFRecord("Basic Schedule Extra Details", (
-                            EnforceField("Record Identity", "BX"),
-                            SpareField("Traction Class", 4),
-                            TextField("UIC Code", 5),
-                            TextField("ATOC Code", 2),
-                            FlagField("Applicable Timetable Code", " YN"), # not relevant for ZTR
-                            TextField("RSID", 8),
-                            FlagField("Data Source", " T"),
-                            SpareField("Spare", 57)
-                            ))
+corrected_bs = nrcif.records.layouts["BS"]
+corrected_bs.fields[3] = YYMMDD_1956_DateField("Date Runs From")
+corrected_bs.fields[4] = YYMMDD_1956_DateField("Date Runs To")
+
+corrected_bx = nrcif.records.layouts["BX"]
+corrected_bx.fields[4] = FlagField("Applicable Timetable Code", " YN")
 
 class ZTR(nrcif.mca_reader.MCA):
     '''An extension of the MCA reader to deal with the slightly cut-back
@@ -54,7 +50,8 @@ class ZTR(nrcif.mca_reader.MCA):
         '''Requires a DB API cursor to the database that will contain the data'''
 
         self.layouts["HD"] = reduced_hd
-        self.layouts["BX"] = reduced_bx
+        self.layouts["BS"] = corrected_bs
+        self.layouts["BX"] = corrected_bx
 
         super().__init__(cur)
 

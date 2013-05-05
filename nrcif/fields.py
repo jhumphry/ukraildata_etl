@@ -219,6 +219,25 @@ class YYMMDDDateField(CIFField):
             y += 2000
         return datetime.date(y, m, d)
 
+class YYMMDD_1956_DateField(CIFField):
+    '''Represents a date in the YYMMDD format with the odd date varient'''
+
+    sql_type = "DATE"
+    py_type = datetime.date
+
+    def __init__(self, name):
+        self.name = name
+        self.width = 6
+
+    @classmethod
+    def read(cls, text):
+
+        if text == "999999":
+            return datetime.date.max
+
+        y, m, d = int(text[0:2]), int(text[2:4]), int(text[4:6])
+        return datetime.date(y + 1956, m, d)
+
 class DD_MM_YYYYDateField(CIFField):
     '''Represents a date in the DD/MM/YYYY format'''
 

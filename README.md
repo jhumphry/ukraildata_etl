@@ -53,7 +53,7 @@ data ends up in the `mca` schema in PostgreSQL):
     This is the manual trains file, containing trains that for whatever
     reason are not entered into the main timetable file. The data format
     used is based around the `MCA` format, but with puzzling omissions and
-    changes (why are all trains listed 45 years in the future?).
+    changes.
 
 -   `TTISFnnn.FLF`
 
