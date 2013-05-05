@@ -163,11 +163,6 @@ should be easier to ensure that they match the definitions in the code.
       --no-tsi    Don't generate for the provided TOC specific interchange data
       --no-alf    Don't generate for the provided Additional Fixed Link data
 
-### mockdb.py
-
-This is a mock database stub that is used instead of Psycopg when the --dry-run
-option of `extract_ttis.py` is used. It can safely be ignored.
-
 ## Performance
 
 Scanning through the files and generating the SQL necessary to insert the

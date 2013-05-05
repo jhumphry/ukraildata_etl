@@ -22,7 +22,7 @@
     downloads into a PostgreSQL database'''
 
 import nrcif.mca_reader, nrcif.ztr_reader, nrcif.msn_reader
-import nrcif.tsi_reader, nrcif.alf_reader, mockdb
+import nrcif.tsi_reader, nrcif.alf_reader, nrcif._mockdb
 
 import psycopg2
 
@@ -64,7 +64,7 @@ if not zipfile.is_zipfile(args.TTIS):
     sys.exit(1)
 
 if args.dry_run:
-    connection = mockdb.Connection(args.dry_run)
+    connection = nrcif._mockdb.Connection(args.dry_run)
 else:
     if args.host:
         connection = psycopg2.connect(  database = args.database,
