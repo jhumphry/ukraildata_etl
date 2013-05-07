@@ -23,6 +23,8 @@ information for manual supplements to the rail timetable (ferries etc) and
 inserts it into a database. The module has to be provided with a database cursor
 initially, and then fed with lines/records one at a time.'''
 
+import copy
+
 import nrcif, nrcif.records, nrcif.mca_reader
 
 from nrcif.fields import *
@@ -33,11 +35,11 @@ reduced_hd = CIFRecord("Header Record", (
                             SpareField("Spare", 79) # All other fields seem to be missing
                             ))
 
-corrected_bs = nrcif.records.layouts["BS"]
+corrected_bs = copy.deepcopy(nrcif.records.layouts["BS"])
 corrected_bs.fields[3] = YYMMDD_1956_DateField("Date Runs From")
 corrected_bs.fields[4] = YYMMDD_1956_DateField("Date Runs To")
 
-corrected_bx = nrcif.records.layouts["BX"]
+corrected_bx = copy.deepcopy(nrcif.records.layouts["BX"])
 corrected_bx.fields[4] = FlagField("Applicable Timetable Code", " YN")
 
 class ZTR(nrcif.mca_reader.MCA):
@@ -46,12 +48,13 @@ class ZTR(nrcif.mca_reader.MCA):
 
     schema = "ztr"
 
+    layouts = nrcif.records.layouts.copy()
+    layouts["HD"] = reduced_hd
+    layouts["BS"] = corrected_bs
+    layouts["BX"] = corrected_bx
+
     def __init__(self, cur):
         '''Requires a DB API cursor to the database that will contain the data'''
-
-        self.layouts["HD"] = reduced_hd
-        self.layouts["BS"] = corrected_bs
-        self.layouts["BX"] = corrected_bx
 
         super().__init__(cur)
 
