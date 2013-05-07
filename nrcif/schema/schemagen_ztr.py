@@ -61,6 +61,7 @@ def gen_sql(DDL, CONS):
 \tdate_runs_from\tDATE,
 \tstp_indicator\tCHAR(1),
 \tloc_order\t\tINTEGER,
+\txmidnight\t\tBOOLEAN,
 '''
     route_pk = '''--ALTER TABLE {0} ADD PRIMARY KEY (train_uid, date_runs_from, stp_indicator, loc_order);
 --ALTER TABLE {0} ADD FOREIGN KEY (train_uid, date_runs_from, stp_indicator)

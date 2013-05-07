@@ -63,6 +63,8 @@ class MCA(nrcif.CIFReader):
         self.date_runs_from = None
         self.stp_indicator = None
         self.loc_order = None
+        self.xmidnight = None
+        self.last_time = None
 
         # for typing convenience
         layouts = self.layouts
@@ -79,7 +81,7 @@ class MCA(nrcif.CIFReader):
         self.prepare_sql_insert("BS", "basic_schedule", bs_width)
 
         for i in ('LO', 'LI', 'CR', 'LT', 'LN'):
-            width = 4 + layouts[i].sql_width
+            width = 5 + layouts[i].sql_width
             tablename = layouts[i].name.lower().replace(" ", "_")
             self.prepare_sql_insert(i, tablename, width)
 
@@ -124,32 +126,45 @@ class MCA(nrcif.CIFReader):
         self.cur.execute(self.sql["BS"], self.context["BS"] +
                                         self.context["BX"] +
                                         self.context["TN"])
-
         self.LOC_order = 0
+        self.xmidnight = False
+        self.last_time = self.context["LO"][1]
         self.cur.execute(self.sql["LO"], [self.train_UID, self.date_runs_from,
-                                            self.stp_indicator, self.LOC_order] +
-                                            self.context["LO"])
+                                            self.stp_indicator, self.LOC_order,
+                                            False] + self.context["LO"])
 
     def process_LI(self):
         self.LOC_order += 1
+        current_time = (self.context["LI"][1] or
+                        self.context["LI"][2] or
+                        self.context["LI"][3] )
+        if not self.xmidnight and current_time < self.last_time:
+            self.xmidnight = True
+        else:
+            self.last_time = current_time
+
         self.cur.execute(self.sql["LI"], [self.train_UID, self.date_runs_from,
-                                            self.stp_indicator, self.LOC_order] +
-                                            self.context["LI"])
+                                            self.stp_indicator, self.LOC_order,
+                                            self.xmidnight] + self.context["LI"])
     def process_CR(self):
         self.cur.execute(self.sql["CR"], [self.train_UID, self.date_runs_from,
-                                            self.stp_indicator, self.LOC_order] +
-                                            self.context["CR"])
+                                            self.stp_indicator, self.LOC_order,
+                                            self.xmidnight] + self.context["CR"])
 
     def process_LT(self):
         self.LOC_order += 1
+        if not self.xmidnight and self.context["LT"][1] < self.last_time:
+            self.xmidnight = True
+        else:
+            self.last_time = self.context["LT"][1]
         self.cur.execute(self.sql["LT"], [self.train_UID, self.date_runs_from,
-                                            self.stp_indicator, self.LOC_order] +
-                                            self.context["LT"])
+                                            self.stp_indicator, self.LOC_order,
+                                            self.xmidnight] + self.context["LT"])
 
     def process_LN(self):
         self.cur.execute(self.sql["LN"], [self.train_UID, self.date_runs_from,
-                                            self.stp_indicator, self.LOC_order] +
-                                            self.context["LN"])
+                                            self.stp_indicator, self.LOC_order,
+                                            self.xmidnight] + self.context["LN"])
 
 def main():
     import sys
