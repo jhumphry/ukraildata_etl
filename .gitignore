@@ -6,3 +6,4 @@ samples/
 *.gen.sql
 *.pstats
 *.log
+*.csv
