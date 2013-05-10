@@ -13,6 +13,7 @@ ANALYZE timetable;
 SELECT 	ir.location,
 	sd.station_name,
 	ir.earliest_arrival,
+	ir.earliest_departure,
 	ir.path
 FROM iterate_reachable('timetable', 'CAMBDGE', '08:00', '2013-05-09', 16) AS ir
 	INNER JOIN msn.station_detail AS sd

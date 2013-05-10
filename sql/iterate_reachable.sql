@@ -12,6 +12,7 @@ CREATE FUNCTION iterate_reachable(  timetable varchar,
 RETURNS TABLE (
         location char(7),
         earliest_arrival time,
+        earliest_departure time,
         path char(6)[]
         )
 AS $IR$
@@ -24,13 +25,14 @@ BEGIN
     CREATE TEMPORARY TABLE temp_i_r (
         location char(7),
         earliest_arrival time,
+        earliest_departure time,
         path char(6)[],
         processed boolean
         );
 
     CREATE UNIQUE INDEX idx_temp_i_r ON temp_i_r (location);
 
-    INSERT INTO temp_i_r VALUES (station, depart, NULL, False);
+    INSERT INTO temp_i_r VALUES (station, depart, depart, NULL, False);
 
     <<iterations>>
     FOR i IN 1 .. iteration_limit LOOP
@@ -43,14 +45,14 @@ BEGIN
 
             <<over_new_connections>>
             FOR next_station IN (   SELECT *
-                        FROM mca.get_direct_connections(timetable,
-                        start_station.location,
-                        start_station.earliest_arrival)
-                        UNION
-                        SELECT *
-                        FROM alf.get_direct_connections(start_station.location,
-                        start_station.earliest_arrival,
-                        timetable_date)) LOOP
+                    FROM mca.get_direct_connections(timetable,
+                    start_station.location,
+                    start_station.earliest_departure)
+                    UNION
+                    SELECT *
+                    FROM alf.get_direct_connections(start_station.location,
+                    start_station.earliest_departure,
+                    timetable_date)) LOOP
 
                 SELECT temp_i_r.earliest_arrival
                 INTO current_arrival
@@ -61,17 +63,21 @@ BEGIN
                     WHEN current_arrival IS NULL AND
                         next_station.earliest_arrival > depart THEN
                         INSERT INTO temp_i_r VALUES (
-                                next_station.location,
-                                next_station.earliest_arrival,
-                                start_station.path || ARRAY[next_station.train_uid],
-                                FALSE );
+                            next_station.location,
+                            next_station.earliest_arrival,
+                            msn.earliest_departure(next_station.location,
+                                    next_station.earliest_arrival),
+                            start_station.path || ARRAY[next_station.train_uid],
+                            FALSE );
 
                     WHEN current_arrival > next_station.earliest_arrival AND
                         next_station.earliest_arrival > depart THEN
                         UPDATE temp_i_r
                         SET     earliest_arrival = next_station.earliest_arrival,
-                            path = start_station.path || ARRAY[next_station.train_uid],
-                            processed = FALSE
+                                earliest_departure = msn.earliest_departure(next_station.location,
+                                    next_station.earliest_arrival),
+                                path = start_station.path || ARRAY[next_station.train_uid],
+                                processed = FALSE
                         WHERE temp_i_r.location = next_station.location;
 
                     ELSE
@@ -81,7 +87,11 @@ BEGIN
         END LOOP over_unprocessed_starting_stations;
     END LOOP iterations;
 
-    RETURN QUERY SELECT temp_i_r.location, temp_i_r.earliest_arrival, temp_i_r.path FROM temp_i_r;
+    RETURN QUERY SELECT temp_i_r.location,
+            temp_i_r.earliest_arrival,
+            temp_i_r.earliest_departure,
+            temp_i_r.path
+        FROM temp_i_r;
 END;
 
 $IR$
