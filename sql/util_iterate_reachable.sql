@@ -1,10 +1,10 @@
-﻿DROP FUNCTION IF EXISTS iterate_reachable(  timetable varchar,
+﻿DROP FUNCTION IF EXISTS util.iterate_reachable(  timetable varchar,
                         station char(7),
                         depart time,
                         timetable_date date,
                         iteration_limit integer);
 
-CREATE FUNCTION iterate_reachable(  timetable varchar,
+CREATE FUNCTION util.iterate_reachable(  timetable varchar,
                     station char(7),
                     depart time,
                     timetable_date date,
