@@ -25,15 +25,15 @@ BEGIN
 	RETURN QUERY SELECT ir.location,
 			EXTRACT(hours from (ir.earliest_arrival - depart)) +
 			EXTRACT(minutes from (ir.earliest_arrival - depart)) / 60.0 AS delay,
-			sd.easting,
-			sd.northing
+			rr.easting,
+			rr.northing
 		FROM util.iterate_reachable(	'isochron_tt',
 						station,
 						depart,
 						'2013-05-09',
 						10) AS ir
-			INNER JOIN msn.station_detail AS sd
-				ON (ir.location = sd.tiploc_code)
+			INNER JOIN naptan.railreferences AS rr
+				ON (ir.location = rr.tiploc)
 		ORDER BY ir.earliest_arrival;
 
 	DROP TABLE isochron_tt;
