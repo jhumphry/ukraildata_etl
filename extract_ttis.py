@@ -45,7 +45,7 @@ parser_no.add_argument("--no-alf", help = "Don't parse the provided Additional F
 
 parser_db = parser.add_argument_group("database arguments")
 parser_db.add_argument("--dry-run", help = "Dump output to a file rather than sending to the database",
-                    nargs = "?", metavar = "LOG FILE", default = None, type=argparse.FileType("w"))
+                    nargs = "?", metavar = "LOG FILE", default = None, type=argparse.FileType("x"))
 parser_db.add_argument("--database", help = "PostgreSQL database to use (default ukraildata)",
                     action = "store", default = "ukraildata")
 parser_db.add_argument("--user", help = "PostgreSQL user for upload",
