@@ -1,0 +1,24 @@
+# Calculate constants for converting between National Grid
+# Easting / Northing and Lat-Lon on the 1830 Airey ellipsoid
+
+scale = 40
+
+a = 6377563.396
+b = 6356256.910
+f0 = 0.9996012717
+
+ee = (a^2 - b^2) / (a^2)
+n = (a-b)/(a+b)
+
+# Constants for finding M
+n1 = b * f0 * (1 + n + 5/4 * n^2 + 5/4 * n^3)
+n2 = b * f0 * (3 * n + 3 * n^2 + 21/8 * n^3)
+n3 = b * f0 * (15/8 * n ^2 + 15/8 * n^3)
+n4 = b * f0 * (35/24 * n ^ 3)
+
+print "ee:", ee, "\n"
+print "n1:", n1, "\n"
+print "n2:", n2, "\n"
+print "n3:", n3, "\n"
+print "n4:", n4, "\n"
+print "\n"
