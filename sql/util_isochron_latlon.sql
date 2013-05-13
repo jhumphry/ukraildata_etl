@@ -19,8 +19,10 @@ DECLARE
 	latlon RECORD;
 BEGIN
 	FOR i IN (SELECT * FROM util.isochron(station, depart, timetable_date)) LOOP
-		latlon = util.natgrid_en_to_latlon(i.easting, i.northing);
-		RETURN QUERY SELECT i.location, i.delay, latlon.lat, latlon.lon;
+		IF i.easting > 0 AND i.northing > 0 THEN
+			latlon = util.natgrid_en_to_latlon(i.easting, i.northing);
+			RETURN QUERY SELECT i.location, i.delay, latlon.lat, latlon.lon;
+		END IF;
 	END LOOP;
 END;
 $IC$

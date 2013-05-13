@@ -45,7 +45,7 @@ BEGIN
 
             <<over_new_connections>>
             FOR next_station IN (   SELECT *
-                    FROM mca.get_direct_connections(timetable,
+                    FROM util.get_direct_connections(timetable,
                     start_station.location,
                     start_station.earliest_departure)
                     UNION

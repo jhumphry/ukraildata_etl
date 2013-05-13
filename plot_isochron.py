@@ -39,8 +39,10 @@ delay=[]
 label_cities = frozenset(('CAMBDGE', 'EDINBUR', 'KNGX   ',
                         'EXETERC', 'CRDFCEN', 'BHAMNWS',
                         'MNCRPIC', 'SOTON  ', 'ABRDEEN',
-                        'DRHM   ', 'BRSTPWY', 'BANGOR ',
-                        'MLAIG  '))
+                        'DRHM   ', 'BANGOR ', 'OBAN   ',
+                        'BLFSTCL', 'DUBLINC', 'PENZNCE',
+                        'LOWSTFT', 'CATZTUS', 'CARLILE',
+                        'SCRBSTR', 'NEWQUAY', 'DOVERP '))
 cities = dict()
 
 fpp = open(sys.argv[1],'r')
@@ -76,7 +78,7 @@ m.drawmapboundary(fill_color=None)
 for j in cities:
     x, y = m(cities[j][0], cities[j][1])
     m.plot(x, y, 'kx')
-    plt.text(x+1000,y+1000,j)
+    plt.text(x-8000,y+3500,j,size='small', color='k')
 
 plt.title("Isochron map of UK rail journeys from CAMBDGE 2013-05-09 08:00")
 plt.show()

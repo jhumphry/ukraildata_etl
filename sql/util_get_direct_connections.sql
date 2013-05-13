@@ -1,6 +1,6 @@
-﻿DROP FUNCTION IF EXISTS mca.get_direct_connections(timetable varchar, station char(7), depart time);
+﻿DROP FUNCTION IF EXISTS util.get_direct_connections(timetable varchar, station char(7), depart time);
 
-CREATE FUNCTION mca.get_direct_connections(timetable varchar, station char(7), depart time)
+CREATE FUNCTION util.get_direct_connections(timetable varchar, station char(7), depart time)
 RETURNS TABLE (
         location char(7),
         earliest_arrival time,

@@ -51,7 +51,7 @@ def gen_sql(DDL, CONS):
     DDL.write("\n\t);\n\n")
 
     CONS.write("-- ***The Z-Trains data appears to contain duplicates, so primary keys cannot be used***\n\n")
-    CONS.write("--ALTER TABLE basic_schedule ADD PRIMARY KEY(train_uid, date_runs_from, stp_indicator);\n")
+    CONS.write("CREATE INDEX idx_ztr_basic_schedule ON basic_schedule (train_uid, date_runs_from, stp_indicator);\n")
 
     DDL.write('''-- The LO, LI, CR, LT and LN tables all have a header added to relate
 -- them to the relevant train\n''')
@@ -63,7 +63,7 @@ def gen_sql(DDL, CONS):
 \tloc_order\t\tINTEGER,
 \txmidnight\t\tBOOLEAN,
 '''
-    route_pk = '''--ALTER TABLE {0} ADD PRIMARY KEY (train_uid, date_runs_from, stp_indicator, loc_order);
+    route_pk = '''CREATE INDEX idx_ztr_{0} ON ztr.{0} (train_uid, date_runs_from, stp_indicator, loc_order);
 --ALTER TABLE {0} ADD FOREIGN KEY (train_uid, date_runs_from, stp_indicator)
 --    REFERENCES basic_schedule (train_uid, date_runs_from, stp_indicator) DEFERRABLE;
 

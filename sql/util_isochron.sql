@@ -17,6 +17,7 @@ DECLARE
 BEGIN
 	CREATE TEMP TABLE isochron_tt AS
 		SELECT * FROM mca.get_full_timetable(timetable_date);
+	INSERT INTO isochron_tt SELECT * FROM ztr.get_full_timetable(timetable_date);
 
 	CREATE INDEX idx_isochron_tt_loc ON isochron_tt (location);
 	CREATE INDEX idx_isochron_tt_uid ON isochron_tt (train_uid);
