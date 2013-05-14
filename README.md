@@ -28,63 +28,6 @@ file `COPYING`.
 > MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
 > Public License for more details.
 
-
-## Data that can be processed by this project
-
-The data provided to the public by ATOC consists of "Full refresh CIF"
-packages zipped into a file with a name such as `ttfnnn.zip` where nnn is a
-number from 000 to 999. Within this zip file are files containing different
-types of data, each of which is extracted into the associated schema (so `MCA`
-data ends up in the `mca` schema in PostgreSQL):
-
--   `TTISFnnn.MCA`
-
-    This is the main timetable file. It contains details on most of the
-    permanent scheduled services (including changes), information on STP
-    (short-term plan) changes to the permanent scheduled services due to
-    things such as engineering works, the associations between trains (when
-    one train 'becomes another', for example) and basic TIPLOC information
-    (TIPLOC represents TIming Point LOCations - a station can have more than
-    one TIPLOC). Some parts of `MCA` files have not been tested as they are
-    not present in the available "Full refresh CIF" files.
-
--   `TTISFnnn.ZTR`
-
-    This is the manual trains file, containing trains that for whatever
-    reason are not entered into the main timetable file. The data format
-    used is based around the `MCA` format, but with puzzling omissions and
-    changes.
-
--   `TTISFnnn.FLF`
-
-    This is the Fixed Link File, giving details of links between nearby
-    stations other than scheduled train services - for example bus links or
-    Tube transfers. It is not processed as all the information is present in
-    the `ALF` files.
-
--   `TTISFnnn.ALF`
-
-    This is the Additional Fixed Link file. It contains all the information
-    in the `FLF` files, but can additionally contain more than one link
-    option between stations.
-
--   `TTISFnnn.MSN`
-
-    This is the Master Station Names file. It contains useful details for
-    each station such as the associated TIPLOC, the geographical location,
-    the time to allow for interchanges and the CATE type, which indicates
-    how useful the station is as an interconnection.
-
--   `TTISFnnn.SET`
-
-    This is a fixed string UCFCATE which exists for no apparent reason. It
-    is not processed.
-
--   `TTISFnnn.DAT`
-
-    This lists the files provided. It is not currently processed, as the files
-    provided are always the same.
-
 ## Provided programs and package
 
 ### `nrcif`
@@ -163,7 +106,190 @@ should be easier to ensure that they match the definitions in the code.
       --no-tsi    Don't generate for the provided TOC specific interchange data
       --no-alf    Don't generate for the provided Additional Fixed Link data
 
-## Performance
+### `extract_naptancsv.py`
+
+This script extracts data on rail stations from NAtional Public Transport
+Access Nodes database dumps supplied in `.csv` format inside a `.zip` container.
+These are available from data.gov.uk. While most of the data relates to bus
+transport, there is one file that gives information on rail stations that may
+be of higher quality than the `.MSN` files supplied by ATOC - for example the
+station names are nicer and the station locations seem to be specified with
+greater than 100m accuracy.
+
+The script will create and populate its own schema so there is no separate
+schema generation.
+
+    $ python3 extract_naptancsv.py --help
+    usage: extract_naptancsv.py [-h] [--no-index] [--dry-run [LOG FILE]]
+                                [--database DATABASE] [--user USER]
+                                [--password PASSWORD] [--host HOST] [--port PORT]
+                                NaPTAN
+
+    positional arguments:
+      NaPTAN                The NaPTAN .zip file containing the required
+                            RailReferences.csv data
+
+    optional arguments:
+      -h, --help            show this help message and exit
+
+    processing options:
+      --no-index            Don't create indexes in the database
+
+    database arguments:
+      --dry-run [LOG FILE]  Dump output to a file rather than sending to the
+                            database
+      --database DATABASE   PostgreSQL database to use (default ukraildata)
+      --user USER           PostgreSQL user for upload
+      --password PASSWORD   PostgreSQL user password
+      --host HOST           PostgreSQL host (if using TCP/IP)
+      --port PORT           PostgreSQL port (if required)
+
+### `plot_isochron.py`
+
+This quick-and-dirty _Python 2 only_ script takes the output from the
+util.isochron_latlon function and plots isochron contours on a map of the
+United Kingdom. It takes one argument, the `.csv` file to process. It requires
+the Basemap extension to Matplotlib.
+
+## Supplied SQL and PL/pgSQL helper functions and routines
+
+In the `sql/` directory there are several useful functions and routines to help
+process the data.
+
+-   `mca.get_train_timetable`
+
+    Given a Train UID reference and a date, this function will return the key
+    information on the train's journey on that date. If the train continues
+    after midnight (i.e. into the next day) the relevant entries will have the
+    `xmidnight` flag set to mark this.
+
+-   `mca.get_full_timetable` and `ztr.get_full_timetable`
+
+    These functions return the full timetable for a particular date from the MCA
+    and ZTR files respectively. This includes the stops on that date from trains
+    that started on the previous day but continued after midnight, and excludes
+    the stops for trains that started on the the specified date but continued
+    after midnight of the next day.
+
+    If you are interested in looking at the properties of the UK rail timetable
+    it is probably best to pull a particular day's timetable into a temporary
+    table, as you then do not have to worry about the details of Short-Term Plan
+    changes, or the other scheduled changes to services.
+
+-   `util.get_direct_connections`
+
+    This function takes the name of a table containing a timetable produced
+    by the previous functions, a station TIPLOC and a time and produces a list
+    of all the direct connections that can be made from this station (i.e.
+    without changes).
+
+-   `alf.get_direct_connections`
+
+    This function is supplied with a station TIPLOC, a time and a date and
+    produces a list of the direct connections from that station. It complements
+    util.get_direct_connections as it supplies the fixed links between
+    stations, such as the tube connections between London terminals.
+
+-   `msn.earliest_departure`
+
+    The inter-change time recommended at a station is usually five minutes but
+    is sometimes more. This function gives the earliest departure time from a
+    station given an arrival time, but will not wrap around midnight (so an
+    arrival time of 23:59 will always produce an earliest departure time of
+    23:59).
+
+-   `util.iterate_reachable`
+
+    This function is supplied with a table containing a timetable, a
+    location, a time, a date and a limit on iterations. It creates a
+    temporary table and inserts the start location and time into it. It then
+    iterates repeatedly over this table, finding the direct connections from
+    this location and time and for each destination seeing if the arrival
+    times found are better than the best arrival times known for that
+    destination, and if so replacing the best known route. It takes account
+    of fixed links and station-specific inter-change times. It will not wrap
+    over midnight. Currently it does not take account of TOC-specific
+    interchange times. Another script `util_iterate_reachable_example.sql` shows
+    how to use this function.
+
+-   `util.isochron` and `util.isochron_latlon`
+
+    These functions take in a station name, a departure time and date and
+    produce a table of stations together with the fastest possible journey to
+    that station. The location of the station is supplied either as Eastings and
+    Northings or Lattitudes and Longitudes.
+
+-   `util.natgrid_en_to_latlon` and `util.natgrid_en_to_latlon_M`
+
+    These functions are used to convert Eastings and Northings to Lattitude and
+    Longitude using the definitions used by the UK Ordinance Survey National
+    Grid. These are based on the 1830 Airey ellipsoid so will not match up very
+    accurately with lattitudes and longitudes based on the GRS80 ellipsoid that
+    is used to define GPS co-ordinates. However as the underlying station data
+    is not very accurate this is probably not a problem.
+
+## Data that can be processed by this project
+
+The data provided to the public by ATOC consists of "Full refresh CIF"
+packages zipped into a file with a name such as `ttfnnn.zip` where nnn is a
+number from 000 to 999. Within this zip file are files containing different
+types of data, each of which is extracted into the associated schema (so `MCA`
+data ends up in the `mca` schema in PostgreSQL):
+
+-   `TTISFnnn.MCA`
+
+    This is the main timetable file. It contains details on most of the
+    permanent scheduled services (including changes), information on STP
+    (short-term plan) changes to the permanent scheduled services due to
+    things such as engineering works, the associations between trains (when
+    one train 'becomes another', for example) and basic TIPLOC information
+    (TIPLOC represents TIming Point LOCations - a station can have more than
+    one TIPLOC). Some parts of `MCA` files have not been tested as they are
+    not present in the available "Full refresh CIF" files.
+
+-   `TTISFnnn.ZTR`
+
+    This is the manual trains file, containing trains that for whatever
+    reason are not entered into the main timetable file. The data format
+    used is based around the `MCA` format, but with puzzling omissions and
+    changes.
+
+-   `TTISFnnn.FLF`
+
+    This is the Fixed Link File, giving details of links between nearby
+    stations other than scheduled train services - for example bus links or
+    Tube transfers. It is not processed as all the information is present in
+    the `ALF` files.
+
+-   `TTISFnnn.ALF`
+
+    This is the Additional Fixed Link file. It contains all the information
+    in the `FLF` files, but can additionally contain more than one link
+    option between stations.
+
+-   `TTISFnnn.MSN`
+
+    This is the Master Station Names file. It contains useful details for
+    each station such as the associated TIPLOC, the geographical location,
+    the time to allow for interchanges and the CATE type, which indicates
+    how useful the station is as an interconnection.
+
+-   `TTISFnnn.SET`
+
+    This is a fixed string UCFCATE which exists for no apparent reason. It
+    is not processed.
+
+-   `TTISFnnn.DAT`
+
+    This lists the files provided. It is not currently processed, as the files
+    provided are always the same.
+
+The data provided by data.gov.uk for NaPTAN is much simpler to process, as
+the only relevant file ( `RailReferences.csv` ) is simply a standard
+comma-separated values file with no particular quirks. The revision
+information from this file is not uploaded.
+
+## Performance tips
 
 Scanning through the files and generating the SQL necessary to insert the
 data generally takes around three minutes on my laptop whereas actually
@@ -185,7 +311,16 @@ installation from Ubuntu, once a symbolic link has been made to
 `/etc/postgresql/9.1/main/postgresql.conf` from the data directory
 `/var/lib/postgresql/9.1/main/`.
 
+-   To restart PostgreSQL without fsync protection and with increased buffers to
+    improve loading speed:
+
     sudo -u postgres /usr/lib/postgresql/9.1/bin/pg_ctl -D /var/lib/postgresql/9.1/main/ -o "-F -c work_mem=256MB -c maintenance_work_mem=256MB" restart
 
-    sudo -u postgres /usr/lib/postgresql/9.1/bin/pg_ctl -D /var/lib/postgresql/9.1/main/ restart
+-   To restart PostgreSQL with fsync protection and increased buffers to make
+    large queries run more efficiently:
 
+    sudo -u postgres /usr/lib/postgresql/9.1/bin/pg_ctl -D /var/lib/postgresql/9.1/main/ -o "-c work_mem=256MB -c maintenance_work_mem=256MB" restart
+
+-   To restart PostgreSQL with the usual settings:
+
+    sudo -u postgres /usr/lib/postgresql/9.1/bin/pg_ctl -D /var/lib/postgresql/9.1/main/ restart
