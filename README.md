@@ -146,10 +146,35 @@ schema generation.
 
 ### `plot_isochron.py`
 
-This quick-and-dirty _Python 2 only_ script takes the output from the
-util.isochron_latlon function and plots isochron contours on a map of the
-United Kingdom. It takes one argument, the `.csv` file to process. It requires
-the Basemap extension to Matplotlib.
+This script takes the output from the util.isochron_latlon
+function and plots isochron contours on a map of the United Kingdom. It
+requires the Basemap extension to Matplotlib and therefore is  _Python 2 only_.
+
+    $ python2 plot_isochron.py --help
+    usage: plot_isochron.py [-h] [--no-labels] [--database DATABASE] [--user USER]
+                            [--password PASSWORD] [--host HOST] [--port PORT]
+                            STATION DEPARTURE
+
+    positional arguments:
+      STATION              The TIPLOC code or station name
+      DEPARTURE            The departure time and date in the format '2013-01-01
+                           15:45'
+
+    optional arguments:
+      -h, --help           show this help message and exit
+      --no-labels          Do not add city labels
+
+    database arguments:
+      --database DATABASE  PostgreSQL database to use (default ukraildata)
+      --user USER          PostgreSQL user for upload
+      --password PASSWORD  PostgreSQL user password
+      --host HOST          PostgreSQL host (if using TCP/IP)
+      --port PORT          PostgreSQL port (if required)
+
+It may take between thirty seconds and a few minutes to prepare the
+data and calculate the contours. A typical invocation might be:
+
+    python2 plot_isochron.py 'sheffield' '2013-05-09 08:00'
 
 ## Supplied SQL and PL/pgSQL helper functions and routines
 

@@ -22,21 +22,54 @@
     needed to reach locations from a given station on a given day/time.
     Python 2 only due to basemap limitation.'''
 
-import sys, contextlib
+import os, sys, contextlib, argparse, datetime
+
+import psycopg2
 
 import numpy as np
-
 import matplotlib
-#matplotlib.use('GTK3Agg')
-
 from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
+
+def read_departure(s):
+    return datetime.datetime.strptime(s, '%Y-%m-%d %H:%M')
+
+parser = argparse.ArgumentParser()
+parser.add_argument("STATION", help = "The TIPLOC code or station name")
+parser.add_argument("DEPARTURE", help = "The departure time and date in the format '2013-01-01 15:45'",
+                        type = read_departure)
+parser.add_argument("--no-labels", help = "Do not add city labels",
+                    action = "store_true", default = False)
+
+parser_db = parser.add_argument_group("database arguments")
+parser_db.add_argument("--database", help = "PostgreSQL database to use (default ukraildata)",
+                    action = "store", default = "ukraildata")
+parser_db.add_argument("--user", help = "PostgreSQL user for upload",
+                    action = "store", default = os.getlogin())
+parser_db.add_argument("--password", help = "PostgreSQL user password",
+                    action = "store", default = "")
+parser_db.add_argument("--host", help = "PostgreSQL host (if using TCP/IP)",
+                    action = "store", default = None)
+parser_db.add_argument("--port", help = "PostgreSQL port (if required)",
+                    action = "store", type = int, default = 5432)
+args = parser.parse_args()
+
+if args.host:
+    connection = psycopg2.connect(  database = args.database,
+                                    user = args.user,
+                                    password = args.password,
+                                    host = args.host,
+                                    port = args.post)
+else:
+    connection = psycopg2.connect(  database = args.database,
+                                    user = args.user,
+                                    password = args.password)
 
 lat=[]
 lon=[]
 delay=[]
 
-label_cities = frozenset(('CAMBDGE', 'EDINBUR', 'KNGX   ',
+label_cities = set(('CAMBDGE', 'EDINBUR', 'KNGX   ',
                         'EXETERC', 'CRDFCEN', 'BHAMNWS',
                         'MNCRPIC', 'SOTON  ', 'ABRDEEN',
                         'DRHM   ', 'BANGOR ', 'OBAN   ',
@@ -45,16 +78,27 @@ label_cities = frozenset(('CAMBDGE', 'EDINBUR', 'KNGX   ',
                         'SCRBSTR', 'NEWQUAY', 'DOVERP '))
 cities = dict()
 
-fpp = open(sys.argv[1],'r')
-fpp.readline() # skip header
-with contextlib.closing(fpp) as fp:
-    for line in fp:
-        locd, delayd, yd, xd = line.split(',')
-        if locd.strip('"') in label_cities:
-            cities[locd.strip('"')]=(xd,yd)
-        lat.append(float(yd))
-        lon.append(float(xd))
-        delay.append(float(delayd))
+with contextlib.closing(connection.cursor()) as cur:
+    cur.callproc('msn.find_station', (args.STATION,))
+    station = cur.fetchone()[0]
+    if not station:
+        print "Station cannot be identified"
+        sys.exit(1)
+
+    label_cities.add(station)
+
+    cur.callproc('util.isochron_latlon', (station,
+                                        args.DEPARTURE.time(),
+                                        args.DEPARTURE.date()))
+    row = cur.fetchone()
+    while row:
+        locd, delayd, yd, xd = row
+        if locd in label_cities:
+            cities[locd]=(xd,yd)
+        lat.append(yd)
+        lon.append(xd)
+        delay.append(delayd)
+        row = cur.fetchone()
 
 m = Basemap(llcrnrlon=-10.5,llcrnrlat=49.5,urcrnrlon=3.5,urcrnrlat=59.5,
             resolution='h',projection='tmerc',lon_0=-4.36,lat_0=54.7)
@@ -65,7 +109,6 @@ delay = np.asarray(delay)
 m.drawmapboundary(fill_color='white')
 m.drawcoastlines()
 m.drawcountries()
-m.fillcontinents(color=(0,0,0,0),lake_color=None)
 
 m.drawparallels(np.arange(-40,61.,2.))
 m.drawmeridians(np.arange(-20.,21.,2.))
@@ -75,10 +118,12 @@ m.contourf(x=x, y=y, data=delay, tri=True)
 m.colorbar()
 m.drawmapboundary(fill_color=None)
 
-for j in cities:
-    x, y = m(cities[j][0], cities[j][1])
-    m.plot(x, y, 'kx')
-    plt.text(x-8000,y+3500,j,size='small', color='k')
+if not args.no_labels:
+    for j in cities:
+        x, y = m(cities[j][0], cities[j][1])
+        m.plot(x, y, 'kx')
+        plt.text(x-8000,y+3500,j,size='small', color='k')
 
-plt.title("Isochron map of UK rail journeys from CAMBDGE 2013-05-09 08:00")
+plt.title("Isochron map of UK rail journeys from {} {}".format(station,
+                            args.DEPARTURE.strftime('%Y-%m-%d %H:%M')))
 plt.show()
