@@ -156,6 +156,15 @@ the Basemap extension to Matplotlib.
 In the `sql/` directory there are several useful functions and routines to help
 process the data.
 
+-   `msn.find_station`
+
+    Given a character string, this function first attempts to see if it is a
+    valid TIPLOC code. If it is not it looks for any station that has a name
+    or alias similar to it, and returns the TIPLOC of that station. If there
+    is more than one match it prioritises by the cate_type field, so large
+    interchanges with similar names will be selected over small branch line
+    stations.
+
 -   `mca.get_train_timetable`
 
     Given a Train UID reference and a date, this function will return the key
