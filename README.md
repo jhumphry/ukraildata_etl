@@ -335,23 +335,24 @@ substantially faster.
 ### Restarting Postgresql
 
 In order to get the best performance when inserting data and creating
-indexes, it is advisable to restart the PostgreSQL server without fsync.
-This allows the possibility of data-loss or corruption if there is a crash,
-so after the data is loaded the server should be restarted using the normal
-configuration. It is also useful to temporarily increase the amount of
-working memory that PostgreSQL is allowed to use, as the default settings
-are rather conservative. The following commands work for a standard
-installation from Ubuntu, once a symbolic link has been made to
+indexes, it is advisable to restart the PostgreSQL server without
+synchronous commits of the write-ahead log. This allows the possibility of
+data-loss (but not corruption) if there is a crash, so after the data is
+loaded the server should be restarted using the normal configuration. It is
+also useful to temporarily increase the amount of working memory that
+PostgreSQL is allowed to use, as the default settings are rather
+conservative. The following commands work for a standard installation from
+Ubuntu, once a symbolic link has been made to
 `/etc/postgresql/9.1/main/postgresql.conf` from the data directory
 `/var/lib/postgresql/9.1/main/`.
 
--   To restart PostgreSQL without fsync protection and with increased buffers to
-    improve loading speed:
+-   To restart PostgreSQL without synchronous commits and with increased
+    buffers to improve loading speed:
 
-    sudo -u postgres /usr/lib/postgresql/9.1/bin/pg_ctl -D /var/lib/postgresql/9.1/main/ -o "-F -c work_mem=256MB -c maintenance_work_mem=256MB" restart
+    sudo -u postgres /usr/lib/postgresql/9.1/bin/pg_ctl -D /var/lib/postgresql/9.1/main/ -o "-c synchronous_commit=off -c work_mem=256MB -c maintenance_work_mem=256MB" restart
 
--   To restart PostgreSQL with fsync protection and increased buffers to make
-    large queries run more efficiently:
+-   To restart PostgreSQL with increased buffers to make large queries run more
+    efficiently:
 
     sudo -u postgres /usr/lib/postgresql/9.1/bin/pg_ctl -D /var/lib/postgresql/9.1/main/ -o "-c work_mem=256MB -c maintenance_work_mem=256MB" restart
 
