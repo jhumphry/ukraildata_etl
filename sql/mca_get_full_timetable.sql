@@ -56,7 +56,7 @@ RETURNS TABLE ( train_uid character(6),
             platform
         FROM mca.origin_location
         WHERE   date_runs_from <= $1
-        UNION
+        UNION ALL
         SELECT train_uid, date_runs_from, stp_indicator,
             loc_order, xmidnight, LEFT(location, 7) AS location,
             scheduled_arrival, scheduled_departure, scheduled_pass,
@@ -64,7 +64,7 @@ RETURNS TABLE ( train_uid character(6),
         FROM mca.intermediate_location
         WHERE   date_runs_from <= $1
             AND NOT xmidnight
-        UNION
+        UNION ALL
         SELECT train_uid, date_runs_from, stp_indicator,
             loc_order, xmidnight, LEFT(location, 7) AS location,
             scheduled_arrival, NULL AS scheduled_departure, NULL AS scheduled_pass,
@@ -80,7 +80,7 @@ RETURNS TABLE ( train_uid character(6),
         FROM mca.intermediate_location
         WHERE   date_runs_from <= ($1 - '1 day'::interval)
             AND xmidnight
-        UNION
+        UNION ALL
         SELECT train_uid, date_runs_from, stp_indicator,
             loc_order, xmidnight, LEFT(location, 7) AS location,
             scheduled_arrival, NULL AS scheduled_departure, NULL AS scheduled_pass,
@@ -94,7 +94,7 @@ RETURNS TABLE ( train_uid character(6),
         scheduled_departure, scheduled_pass, platform
     FROM locations
         INNER JOIN bs USING (train_uid, date_runs_from, stp_indicator)
-    UNION
+    UNION ALL
     SELECT train_uid, stp_indicator, loc_order,
         xmidnight, location, scheduled_arrival,
         scheduled_departure, scheduled_pass, platform

@@ -57,22 +57,22 @@ RETURNS TABLE ( train_uid character(6),
         FROM ztr.origin_location
             INNER JOIN msn.station_detail AS sd ON (LEFT(location,3) = sd._3_alpha_code)
         WHERE   date_runs_from <= $1
-        UNION
+        UNION ALL
         SELECT train_uid, date_runs_from, stp_indicator,
             loc_order, xmidnight, sd.tiploc_code AS location,
             scheduled_arrival, scheduled_departure, scheduled_pass,
             platform
         FROM ztr.intermediate_location
-            INNER JOIN msn.station_detail AS sd ON (LEFT(location,3) = sd._3_alpha_code)        
+            INNER JOIN msn.station_detail AS sd ON (LEFT(location,3) = sd._3_alpha_code)
         WHERE   date_runs_from <= $1
             AND NOT xmidnight
-        UNION
+        UNION ALL
         SELECT train_uid, date_runs_from, stp_indicator,
             loc_order, xmidnight, sd.tiploc_code AS location,
             scheduled_arrival, NULL AS scheduled_departure, NULL AS scheduled_pass,
             platform
         FROM ztr.terminating_location
-            INNER JOIN msn.station_detail AS sd ON (LEFT(location,3) = sd._3_alpha_code)         
+            INNER JOIN msn.station_detail AS sd ON (LEFT(location,3) = sd._3_alpha_code)
         WHERE   date_runs_from <= $1
             AND NOT xmidnight
     ), locations_p AS (
@@ -81,16 +81,16 @@ RETURNS TABLE ( train_uid character(6),
             scheduled_arrival, scheduled_departure, scheduled_pass,
             platform
         FROM ztr.intermediate_location
-            INNER JOIN msn.station_detail AS sd ON (LEFT(location,3) = sd._3_alpha_code)        
+            INNER JOIN msn.station_detail AS sd ON (LEFT(location,3) = sd._3_alpha_code)
         WHERE   date_runs_from <= ($1 - '1 day'::interval)
             AND xmidnight
-        UNION
+        UNION ALL
         SELECT train_uid, date_runs_from, stp_indicator,
             loc_order, xmidnight, sd.tiploc_code AS location,
             scheduled_arrival, NULL AS scheduled_departure, NULL AS scheduled_pass,
             platform
         FROM ztr.terminating_location
-            INNER JOIN msn.station_detail AS sd ON (LEFT(location,3) = sd._3_alpha_code)         
+            INNER JOIN msn.station_detail AS sd ON (LEFT(location,3) = sd._3_alpha_code)
         WHERE   date_runs_from <= ($1 - '1 day'::interval)
             AND xmidnight
     )
@@ -99,7 +99,7 @@ RETURNS TABLE ( train_uid character(6),
         scheduled_departure, scheduled_pass, platform
     FROM locations
         INNER JOIN bs USING (train_uid, date_runs_from, stp_indicator)
-    UNION
+    UNION ALL
     SELECT train_uid, stp_indicator, loc_order,
         xmidnight, location, scheduled_arrival,
         scheduled_departure, scheduled_pass, platform
