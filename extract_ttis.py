@@ -96,7 +96,7 @@ else:
 
 
 with zipfile.ZipFile(args.TTIS,"r") as ttis , \
-        contextlib.closing(connection.cursor()) as cur:
+        connection.cursor() as cur:
 
     ttis_files = {x[-3:] : x for x in ttis.namelist()}
 
@@ -123,7 +123,7 @@ with zipfile.ZipFile(args.TTIS,"r") as ttis , \
             connection.commit()
 
 connection.autocommit = True
-with contextlib.closing(connection.cursor()) as cur:
+with connection.cursor() as cur:
     cur.execute("VACUUM ANALYZE;")
 connection.close()
 

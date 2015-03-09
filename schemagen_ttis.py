@@ -20,7 +20,7 @@
 TTIS timetable .zip files. This is done dynamically to ensure it keeps in sync
 with the definitions in the nrcif package.'''
 
-import argparse, contextlib
+import argparse
 
 import nrcif.schema.schemagen_mca, nrcif.schema.schemagen_ztr
 import nrcif.schema.schemagen_msn, nrcif.schema.schemagen_tsi
@@ -53,7 +53,7 @@ jobs = ((args.no_mca, nrcif.schema.schemagen_mca),
         (args.no_tsi, nrcif.schema.schemagen_tsi),
         (args.no_alf, nrcif.schema.schemagen_alf))
 
-with contextlib.closing(args.DDL) as DDL, contextlib.closing(args.CONS) as CONS:
+with args.DDL as DDL, args.CONS as CONS:
     for job in jobs:
         if not job[0]:
             job[1].gen_sql(DDL, CONS)

@@ -21,7 +21,7 @@
 ''' plot_isochron.py - Plot isochron figures showing the contours of the time
     needed to reach locations from a given station on a given day/time.'''
 
-import os, sys, contextlib, argparse, datetime
+import os, sys, argparse, datetime
 
 import psycopg2
 
@@ -77,7 +77,7 @@ label_cities = set(('CAMBDGE', 'EDINBUR', 'KNGX   ',
                         'SCRBSTR', 'NEWQUAY', 'DOVERP '))
 cities = dict()
 
-with contextlib.closing(connection.cursor()) as cur:
+with connection.cursor() as cur:
     cur.callproc('msn.find_station', (args.STATION,))
     station = cur.fetchone()[0]
     if not station:

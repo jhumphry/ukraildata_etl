@@ -10,10 +10,10 @@ extract the basic data from the files into a database while maintaining its
 basic structure, and from there the parts of the data that are useful for
 your specific purposes can be extracted.
 
-It was developed on Python 3.4, but should also work with Python 3.2. The
-Psycopg package is required to upload the results to the PostgreSQL database.
-It is advisable to use the latest stable version of PostgreSQL, and versions
-before 9.1 may not work at all.
+It was developed on Python 3.4, but should also work with Python 3.2 or
+3.3. The Psycopg (2.5+) package is required to upload the results to
+the PostgreSQL database. It is advisable to use the latest stable
+version of PostgreSQL, and versions before 9.1 may not work at all.
 
 ### Note
 

@@ -25,7 +25,7 @@ import nrcif._mockdb
 
 import psycopg2
 
-import sys, os, argparse, contextlib, codecs
+import sys, os, argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("source_path", help = "The directory containing the SQL sources (default 'sql').",
@@ -77,7 +77,7 @@ sources = [
 
 connection.autocommit = True
 
-with contextlib.closing(connection.cursor()) as cur:
+with connection.cursor() as cur:
 
     cur.execute('DROP SCHEMA IF EXISTS util CASCADE;')
     cur.execute('CREATE SCHEMA util;')
