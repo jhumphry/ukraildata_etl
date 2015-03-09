@@ -39,4 +39,5 @@ RETURN QUERY EXECUTE format('
         USING station, depart;
 END;
 $B$
-LANGUAGE 'plpgsql' ;
+STABLE
+LANGUAGE 'plpgsql';

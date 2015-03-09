@@ -36,4 +36,5 @@ BEGIN
 	RETURN d;
 END
 $ED$
+STABLE
 LANGUAGE 'plpgsql';

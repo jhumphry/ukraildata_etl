@@ -19,4 +19,5 @@ BEGIN
 	END CASE;
 END
 $ED$
+STABLE
 LANGUAGE 'plpgsql';
