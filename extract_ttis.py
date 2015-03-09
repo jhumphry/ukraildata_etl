@@ -1,6 +1,6 @@
 # extract_ttis.py
 
-# Copyright 2013, James Humphry
+# Copyright 2013 - 2015 James Humphry
 
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@ parser_no.add_argument("--no-tsi", help = "Don't parse the provided TOC specific
                     action = "store_true", default = False)
 parser_no.add_argument("--no-alf", help = "Don't parse the provided Additional Fixed Link data",
                     action = "store_true", default = False)
+parser_no.add_argument("--old-naming", help = "Use old naming convention in TTIF file",
+                    action = "store_true", default = False)
 
 parser_db = parser.add_argument_group("database arguments")
 parser_db.add_argument("--dry-run", help = "Dump output to a file rather than sending to the database",
@@ -77,12 +79,20 @@ else:
                                         user = args.user,
                                         password = args.password)
 
-# job wanted?, job handling class, file extension, needs MSN header fix?
-jobs = ((args.no_mca, nrcif.mca_reader.MCA, "MCA", False),
-        (args.no_ztr, nrcif.ztr_reader.ZTR, "ZTR", False),
-        (args.no_msn, nrcif.msn_reader.MSN, "MSN", True),
-        (args.no_tsi, nrcif.tsi_reader.TSI, "TSI", False),
-        (args.no_alf, nrcif.alf_reader.ALF, "ALF", False))
+if args.old_naming:
+    # job wanted?, job handling class, file extension, needs MSN header fix?
+    jobs = ((args.no_mca, nrcif.mca_reader.MCA, "MCA", False),
+            (args.no_ztr, nrcif.ztr_reader.ZTR, "ZTR", False),
+            (args.no_msn, nrcif.msn_reader.MSN, "MSN", True),
+            (args.no_tsi, nrcif.tsi_reader.TSI, "TSI", False),
+            (args.no_alf, nrcif.alf_reader.ALF, "ALF", False))
+else:
+     # job wanted?, job handling class, file extension, needs MSN header fix?
+    jobs = ((args.no_mca, nrcif.mca_reader.MCA, "mca", False),
+            (args.no_ztr, nrcif.ztr_reader.ZTR, "ztr", False),
+            (args.no_msn, nrcif.msn_reader.MSN, "msn", True),
+            (args.no_tsi, nrcif.tsi_reader.TSI, "tsi", False),
+            (args.no_alf, nrcif.alf_reader.ALF, "alf", False))
 
 
 with zipfile.ZipFile(args.TTIS,"r") as ttis , \

@@ -62,6 +62,7 @@ command line as follows:
       --no-msn              Don't parse the provided main station data
       --no-tsi              Don't parse the provided TOC specific interchange data
       --no-alf              Don't parse the provided Additional Fixed Link data
+      --old-naming          Use old naming convention in TTIF file
 
     database arguments:
       --dry-run [LOG FILE]  Dump output to a file rather than sending to the
@@ -112,7 +113,7 @@ This script extracts data on rail stations from NAtional Public Transport
 Access Nodes database dumps supplied in `.csv` format inside a `.zip` container.
 These are available from data.gov.uk. While most of the data relates to bus
 transport, there is one file that gives information on rail stations that may
-be of higher quality than the `.MSN` files supplied by ATOC - for example the
+be of higher quality than the `.msn` files supplied by ATOC - for example the
 station names are nicer and the station locations seem to be specified with
 greater than 100m accuracy.
 
@@ -270,7 +271,7 @@ number from 000 to 999. Within this zip file are files containing different
 types of data, each of which is extracted into the associated schema (so `MCA`
 data ends up in the `mca` schema in PostgreSQL):
 
--   `TTISFnnn.MCA`
+-   `ttisfnnn.mca`
 
     This is the main timetable file. It contains details on most of the
     permanent scheduled services (including changes), information on STP
@@ -281,39 +282,39 @@ data ends up in the `mca` schema in PostgreSQL):
     one TIPLOC). Some parts of `MCA` files have not been tested as they are
     not present in the available "Full refresh CIF" files.
 
--   `TTISFnnn.ZTR`
+-   `ttisfnnn.ztr`
 
     This is the manual trains file, containing trains that for whatever
     reason are not entered into the main timetable file. The data format
     used is based around the `MCA` format, but with puzzling omissions and
     changes.
 
--   `TTISFnnn.FLF`
+-   `ttisfnnn.flf`
 
     This is the Fixed Link File, giving details of links between nearby
     stations other than scheduled train services - for example bus links or
     Tube transfers. It is not processed as all the information is present in
     the `ALF` files.
 
--   `TTISFnnn.ALF`
+-   `ttisfnnn.alf`
 
     This is the Additional Fixed Link file. It contains all the information
     in the `FLF` files, but can additionally contain more than one link
     option between stations.
 
--   `TTISFnnn.MSN`
+-   `ttisfnnn.msn`
 
     This is the Master Station Names file. It contains useful details for
     each station such as the associated TIPLOC, the geographical location,
     the time to allow for interchanges and the CATE type, which indicates
     how useful the station is as an interconnection.
 
--   `TTISFnnn.SET`
+-   `ttisfnnn.set`
 
     This is a fixed string UCFCATE which exists for no apparent reason. It
     is not processed.
 
--   `TTISFnnn.DAT`
+-   `ttisfnnn.dat`
 
     This lists the files provided. It is not currently processed, as the files
     provided are always the same.
