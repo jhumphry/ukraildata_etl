@@ -10,8 +10,10 @@ extract the basic data from the files into a database while maintaining its
 basic structure, and from there the parts of the data that are useful for
 your specific purposes can be extracted.
 
-It was developed on Python 3.3, but should also work with Python 3.2. The
+It was developed on Python 3.4, but should also work with Python 3.2. The
 Psycopg package is required to upload the results to the PostgreSQL database.
+It is advisable to use the latest stable version of PostgreSQL, and versions
+before 9.1 may not work at all.
 
 ### Note
 
@@ -84,6 +86,8 @@ commands to create the data definitions for the various schema and tables
 that wil be used and one (CONS) that contains indexes and constraints that
 the data tables should meet. By generating these file automatically, it
 should be easier to ensure that they match the definitions in the code.
+For performance reasons, it is strongly advised that you do not use the
+CONS file to generate the indexes until after the data has been uploaded.
 
     $ python3 schemagen_ttis.py --help
     usage: schemagen_ttis.py [-h] [--no-mca] [--no-ztr] [--no-msn] [--no-tsi]
@@ -328,7 +332,7 @@ information from this file is not uploaded.
 
 Scanning through the files and generating the SQL necessary to insert the
 data generally takes around three minutes on my laptop whereas actually
-inserting the data takes at least eleven times as long. Creating indexes
+inserting the data takes at least eight times as long. Creating indexes
 after the data is loaded is only around one minute. The good news is that
 once the data is loaded and indexed, subsequent processing should be
 substantially faster.
@@ -342,21 +346,19 @@ data-loss (but not corruption) if there is a crash, so after the data is
 loaded the server should be restarted using the normal configuration. It is
 also useful to temporarily increase the amount of working memory that
 PostgreSQL is allowed to use, as the default settings are rather
-conservative. The following commands work for a standard installation from
-Ubuntu, once a symbolic link has been made to
-`/etc/postgresql/9.1/main/postgresql.conf` from the data directory
-`/var/lib/postgresql/9.1/main/`.
+conservative. The following suggested commands may need amending to
+reflect the location of the PostgreSQL data directory on your system.
 
 -   To restart PostgreSQL without synchronous commits and with increased
     buffers to improve loading speed:
 
-    sudo -u postgres /usr/lib/postgresql/9.1/bin/pg_ctl -D /var/lib/postgresql/9.1/main/ -o "-c synchronous_commit=off -c work_mem=256MB -c maintenance_work_mem=256MB" restart
+    sudo -u postgres pg_ctl -D /var/lib/postgres/data/ -o "-c synchronous_commit=off -c work_mem=256MB -c maintenance_work_mem=256MB" restart
 
 -   To restart PostgreSQL with increased buffers to make large queries run more
     efficiently:
 
-    sudo -u postgres /usr/lib/postgresql/9.1/bin/pg_ctl -D /var/lib/postgresql/9.1/main/ -o "-c work_mem=256MB -c maintenance_work_mem=256MB" restart
+    sudo -u postgres pg_ctl -D /var/lib/postgres/data/ -o "-c work_mem=256MB -c maintenance_work_mem=256MB" restart
 
 -   To restart PostgreSQL with the usual settings:
 
-    sudo -u postgres /usr/lib/postgresql/9.1/bin/pg_ctl -D /var/lib/postgresql/9.1/main/ restart
+    sudo -u postgres pg_ctl -D /var/lib/postgres/data/ restart
