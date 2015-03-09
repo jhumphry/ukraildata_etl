@@ -1,6 +1,6 @@
 # plot_isochron.py
 
-# Copyright 2013, James Humphry
+# Copyright 2013 - 2015, James Humphry
 
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -19,8 +19,7 @@
 #
 
 ''' plot_isochron.py - Plot isochron figures showing the contours of the time
-    needed to reach locations from a given station on a given day/time.
-    Python 2 only due to basemap limitation.'''
+    needed to reach locations from a given station on a given day/time.'''
 
 import os, sys, contextlib, argparse, datetime
 
@@ -36,7 +35,7 @@ def read_departure(s):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("STATION", help = "The TIPLOC code or station name")
-parser.add_argument("DEPARTURE", help = "The departure time and date in the format '2013-01-01 15:45'",
+parser.add_argument("DEPARTURE", help = "The departure time and date in the format '2015-01-01 15:45'",
                         type = read_departure)
 parser.add_argument("--no-labels", help = "Do not add city labels",
                     action = "store_true", default = False)
@@ -82,7 +81,7 @@ with contextlib.closing(connection.cursor()) as cur:
     cur.callproc('msn.find_station', (args.STATION,))
     station = cur.fetchone()[0]
     if not station:
-        print "Station cannot be identified"
+        print("Station cannot be identified")
         sys.exit(1)
 
     label_cities.add(station)
