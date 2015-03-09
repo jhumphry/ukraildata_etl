@@ -149,6 +149,34 @@ schema generation.
       --host HOST           PostgreSQL host (if using TCP/IP)
       --port PORT           PostgreSQL port (if required)
 
+### `create_functions.py`
+
+This script is used to add or update various useful functions and routines.
+The source for these routines is stored in the `sql` directory and they
+are described in the section below.
+
+    $ python3 create_functions.py --helpusage: create_functions.py [-h]
+                                [--dry-run [LOG FILE]] [--database DATABASE]
+                                [--user USER] [--password PASSWORD]
+                                [--host HOST] [--port PORT]
+                                [SOURCE PATH]
+
+    positional arguments:
+      SOURCE PATH           The directory containing the SQL sources (default
+                            'sql').
+
+    optional arguments:
+      -h, --help            show this help message and exit
+
+    database arguments:
+      --dry-run [LOG FILE]  Dump output to a file rather than sending to the
+                            database
+      --database DATABASE   PostgreSQL database to use (default ukraildata)
+      --user USER           PostgreSQL user for upload
+      --password PASSWORD   PostgreSQL user password
+      --host HOST           PostgreSQL host (if using TCP/IP)
+      --port PORT           PostgreSQL port (if required)
+
 ### `plot_isochron.py`
 
 This script takes the output from the util.isochron_latlon
@@ -184,7 +212,8 @@ data and calculate the contours. A typical invocation might be:
 ## Supplied SQL and PL/pgSQL helper functions and routines
 
 In the `sql/` directory there are several useful functions and routines to help
-process the data.
+process the data. These can be installed using the `create_functions.py`
+script described above.
 
 -   `msn.find_station`
 
