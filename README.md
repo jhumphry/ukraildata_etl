@@ -83,7 +83,7 @@ likely to be worth skipping if some other part of the data is more interesting.
 
 This script is used to generate two SQL files, one (DDL) that contains
 commands to create the data definitions for the various schema and tables
-that wil be used and one (CONS) that contains indexes and constraints that
+that will be used and one (CONS) that contains indexes and constraints that
 the data tables should meet. By generating these file automatically, it
 should be easier to ensure that they match the definitions in the code.
 For performance reasons, it is strongly advised that you do not use the
@@ -285,14 +285,14 @@ script described above.
     These functions take in a station name, a departure time and date and
     produce a table of stations together with the fastest possible journey to
     that station. The location of the station is supplied either as Eastings and
-    Northings or Lattitudes and Longitudes.
+    Northings or Latitudes and Longitudes.
 
 -   `util.natgrid_en_to_latlon` and `util.natgrid_en_to_latlon_M`
 
-    These functions are used to convert Eastings and Northings to Lattitude and
+    These functions are used to convert Eastings and Northings to Latitude and
     Longitude using the definitions used by the UK Ordinance Survey National
     Grid. These are based on the 1830 Airey ellipsoid so will not match up very
-    accurately with lattitudes and longitudes based on the GRS80 ellipsoid that
+    accurately with latitudes and longitudes based on the GRS80 ellipsoid that
     is used to define GPS co-ordinates. However as the underlying station data
     is not very accurate this is probably not a problem.
 
@@ -366,7 +366,7 @@ after the data is loaded is only around one minute. The good news is that
 once the data is loaded and indexed, subsequent processing should be
 substantially faster.
 
-### Restarting Postgresql
+### Restarting PostgreSQL
 
 In order to get the best performance when inserting data and creating
 indexes, it is advisable to restart the PostgreSQL server without
@@ -381,13 +381,13 @@ reflect the location of the PostgreSQL data directory on your system.
 -   To restart PostgreSQL without synchronous commits and with increased
     buffers to improve loading speed:
 
-    sudo -u postgres pg_ctl -D /var/lib/postgres/data/ -o "-c synchronous_commit=off -c work_mem=256MB -c maintenance_work_mem=256MB" restart
+    `sudo -u postgres pg_ctl -D /var/lib/postgres/data/ -o "-c synchronous_commit=off -c work_mem=1GB -c maintenance_work_mem=1GB" restart`
 
 -   To restart PostgreSQL with increased buffers to make large queries run more
     efficiently:
 
-    sudo -u postgres pg_ctl -D /var/lib/postgres/data/ -o "-c work_mem=256MB -c maintenance_work_mem=256MB" restart
+    `sudo -u postgres pg_ctl -D /var/lib/postgres/data/ -o "-c work_mem=512MB" restart`
 
 -   To restart PostgreSQL with the usual settings:
 
-    sudo -u postgres pg_ctl -D /var/lib/postgres/data/ restart
+    `sudo -u postgres pg_ctl -D /var/lib/postgres/data/ restart`
