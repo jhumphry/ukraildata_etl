@@ -34,15 +34,15 @@ parser.add_argument("CONS", help = "The destination for the SQL constraints & in
                             nargs = "?", default = "schema_ttis_cons.gen.sql", type=argparse.FileType("w"))
 
 parser_no = parser.add_argument_group("processing options")
-parser_no.add_argument("--no-mca", help = "Don't generate for the provided main timetable data",
+parser_no.add_argument("--no-mca", help = "Don't generate for the main timetable data",
                     action = "store_true", default = False)
-parser_no.add_argument("--no-ztr", help = "Don't generate for the provided Z-Trains (manual additions) timetable data",
+parser_no.add_argument("--no-ztr", help = "Don't generate for the Z-Trains (manual additions) timetable data",
                     action = "store_true", default = False)
-parser_no.add_argument("--no-msn", help = "Don't generate for the provided main station data",
+parser_no.add_argument("--no-msn", help = "Don't generate for the main station data",
                     action = "store_true", default = False)
-parser_no.add_argument("--no-tsi", help = "Don't generate for the provided TOC specific interchange data",
+parser_no.add_argument("--no-tsi", help = "Don't generate for the TOC specific interchange data",
                     action = "store_true", default = False)
-parser_no.add_argument("--no-alf", help = "Don't generate for the provided Additional Fixed Link data",
+parser_no.add_argument("--no-alf", help = "Don't generate for the Additional Fixed Link data",
                     action = "store_true", default = False)
 
 args = parser.parse_args()
