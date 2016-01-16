@@ -23,6 +23,12 @@ class Cursor(object):
     def __init__(self, fp):
         self.fp = fp
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return False  # Don't suppress exceptions
+
     def execute(self, sql, params = None):
         self.fp.write("Executed SQL: '{}' with params '{}'\n".format(sql, repr(params)))
 
@@ -38,6 +44,7 @@ class Connection(object):
         return Cursor(self.fp)
 
     def commit(self):
+        self.fp.write("Committed transaction\n")
         self.fp.flush()
 
     def close(self):

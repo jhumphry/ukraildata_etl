@@ -163,5 +163,11 @@ class CIFRecord(object):
 class DummyCursor(object):
     '''A dummy cursor object for use as a mock when testing CIF readers'''
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return False  # Don't suppress exceptions
+
     def execute(self, sql, params = None):
         print("Dummy cursor executed SQL: '{}' with params '{}'".format(sql, repr(params)))
