@@ -58,6 +58,13 @@ parser_db.add_argument("--host", help = "PostgreSQL host (if using TCP/IP)",
                     action = "store", default = None)
 parser_db.add_argument("--port", help = "PostgreSQL port (if required)",
                     action = "store", type = int, default = 5432)
+parser_db.add_argument("--no-sync-commit", help = "Disable synchronous commits",
+                    action = "store_true", default = False)
+parser_db.add_argument("--work-mem", help = "Size of working memory in MB ",
+                    action = "store", type = int, default = 0)
+parser_db.add_argument("--maintenance-work-mem", help = "Size of maintenance working memory in MB",
+                    action = "store", type = int, default = 0)
+
 
 args = parser.parse_args()
 
@@ -97,6 +104,15 @@ else:
 
 with zipfile.ZipFile(args.TTIS,"r") as ttis , \
         connection.cursor() as cur:
+
+    if args.no_sync_commit:
+            cur.execute("SET SESSION synchronous_commit=off;")
+
+    if args.work_mem != 0:
+            cur.execute("SET SESSION work_mem=%s;",(args.work_mem*1024,))
+
+    if args.maintenance_work_mem != 0:
+            cur.execute("SET SESSION maintenance_work_mem=%s;",(args.maintenance_work_mem*1024,))
 
     ttis_files = {x[-3:] : x for x in ttis.namelist()}
 

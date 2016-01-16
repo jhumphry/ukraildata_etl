@@ -74,10 +74,18 @@ command line as follows:
       --password PASSWORD   PostgreSQL user password
       --host HOST           PostgreSQL host (if using TCP/IP)
       --port PORT           PostgreSQL port (if required)
+      --no-sync-commit      Disable synchronous commits
+      --work-mem WORK_MEM   Size of working memory in MB
+      --maintenance-work-mem MAINTENANCE_WORK_MEM
+                            Size of maintenance working memory in MB
 
-Options are available to skip certain types of data contained within the
-.zip file. The `MCA` file takes the great majority of the processing time, so is
-likely to be worth skipping if some other part of the data is more interesting.
+Options are available to skip certain types of data contained within
+the .zip file. The `MCA` file takes the great majority of the
+processing time, so is likely to be worth skipping if some other part
+of the data is more interesting. The `--no-sync-commit` option
+temporarily disables synchronous commits and so can give a speed boost.
+The `--work-mem` and `--maintenance-work-mem` options temporarily
+increase the amount of working memory that the PostgreSQL server uses.
 
 ### `schemagen_ttis.py`
 
@@ -370,12 +378,16 @@ substantially faster.
 
 In order to get the best performance when inserting data and creating
 indexes, it is advisable to restart the PostgreSQL server without
-synchronous commits of the write-ahead log. This allows the possibility of
-data-loss (but not corruption) if there is a crash, so after the data is
-loaded the server should be restarted using the normal configuration. It is
-also useful to temporarily increase the amount of working memory that
-PostgreSQL is allowed to use, as the default settings are rather
-conservative. The following suggested commands may need amending to
+synchronous commits of the write-ahead log. This allows the possibility
+of data-loss (but not corruption) if there is a crash, so after the
+data is loaded the server should be restarted using the normal
+configuration. It is also useful to temporarily increase the amount of
+working memory that PostgreSQL is allowed to use, as the default
+settings are rather conservative.
+
+The settings can be altered on a per-session basis using the
+command-line options. The following suggested commands change these
+settings until the server is restarted. They may need amending to
 reflect the location of the PostgreSQL data directory on your system.
 
 -   To restart PostgreSQL without synchronous commits and with increased
