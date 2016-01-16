@@ -21,60 +21,66 @@
 ''' plot_isochron.py - Plot isochron figures showing the contours of the time
     needed to reach locations from a given station on a given day/time.'''
 
-import os, sys, argparse, datetime
+import os
+import sys
+import argparse
+import datetime
 
 import psycopg2
 
 import numpy as np
-import matplotlib
 from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
+
 
 def read_departure(s):
     return datetime.datetime.strptime(s, '%Y-%m-%d %H:%M')
 
 parser = argparse.ArgumentParser()
-parser.add_argument("STATION", help = "The TIPLOC code or station name")
-parser.add_argument("DEPARTURE", help = "The departure time and date in the format '2015-01-01 15:45'",
-                        type = read_departure)
-parser.add_argument("--no-labels", help = "Do not add city labels",
-                    action = "store_true", default = False)
+parser.add_argument("STATION", help="The TIPLOC code or station name")
+parser.add_argument("DEPARTURE", help="The departure time and date in the "
+                                      "format '2015-01-01 15:45'",
+                    type=read_departure)
+parser.add_argument("--no-labels", help="Do not add city labels",
+                    action="store_true", default=False)
 
 parser_db = parser.add_argument_group("database arguments")
-parser_db.add_argument("--database", help = "PostgreSQL database to use (default ukraildata)",
-                    action = "store", default = "ukraildata")
-parser_db.add_argument("--user", help = "PostgreSQL user for upload",
-                    action = "store", default = os.environ.get("USER","postgres"))
-parser_db.add_argument("--password", help = "PostgreSQL user password",
-                    action = "store", default = "")
-parser_db.add_argument("--host", help = "PostgreSQL host (if using TCP/IP)",
-                    action = "store", default = None)
-parser_db.add_argument("--port", help = "PostgreSQL port (if required)",
-                    action = "store", type = int, default = 5432)
+parser_db.add_argument("--database",
+                       help="PostgreSQL database to use (default ukraildata)",
+                       action="store", default="ukraildata")
+parser_db.add_argument("--user", help="PostgreSQL user for upload",
+                       action="store",
+                       default=os.environ.get("USER", "postgres"))
+parser_db.add_argument("--password", help="PostgreSQL user password",
+                       action="store", default="")
+parser_db.add_argument("--host", help="PostgreSQL host (if using TCP/IP)",
+                       action="store", default=None)
+parser_db.add_argument("--port", help="PostgreSQL port (if required)",
+                       action="store", type=int, default=5432)
 args = parser.parse_args()
 
 if args.host:
-    connection = psycopg2.connect(  database = args.database,
-                                    user = args.user,
-                                    password = args.password,
-                                    host = args.host,
-                                    port = args.post)
+    connection = psycopg2.connect(database=args.database,
+                                  user=args.user,
+                                  password=args.password,
+                                  host=args.host,
+                                  port=args.post)
 else:
-    connection = psycopg2.connect(  database = args.database,
-                                    user = args.user,
-                                    password = args.password)
+    connection = psycopg2.connect(database=args.database,
+                                  user=args.user,
+                                  password=args.password)
 
-lat=[]
-lon=[]
-delay=[]
+lat = []
+lon = []
+delay = []
 
 label_cities = set(('CAMBDGE', 'EDINBUR', 'KNGX   ',
-                        'EXETERC', 'CRDFCEN', 'BHAMNWS',
-                        'MNCRPIC', 'SOTON  ', 'ABRDEEN',
-                        'DRHM   ', 'BANGOR ', 'OBAN   ',
-                        'BLFSTCL', 'DUBLINC', 'PENZNCE',
-                        'LOWSTFT', 'CATZTUS', 'CARLILE',
-                        'SCRBSTR', 'NEWQUAY', 'DOVERP '))
+                    'EXETERC', 'CRDFCEN', 'BHAMNWS',
+                    'MNCRPIC', 'SOTON  ', 'ABRDEEN',
+                    'DRHM   ', 'BANGOR ', 'OBAN   ',
+                    'BLFSTCL', 'DUBLINC', 'PENZNCE',
+                    'LOWSTFT', 'CATZTUS', 'CARLILE',
+                    'SCRBSTR', 'NEWQUAY', 'DOVERP '))
 cities = dict()
 
 with connection.cursor() as cur:
@@ -87,20 +93,20 @@ with connection.cursor() as cur:
     label_cities.add(station)
 
     cur.callproc('util.isochron_latlon', (station,
-                                        args.DEPARTURE.time(),
-                                        args.DEPARTURE.date()))
+                                          args.DEPARTURE.time(),
+                                          args.DEPARTURE.date()))
     row = cur.fetchone()
     while row:
         locd, delayd, yd, xd = row
         if locd in label_cities:
-            cities[locd]=(xd,yd)
+            cities[locd] = (xd, yd)
         lat.append(yd)
         lon.append(xd)
         delay.append(delayd)
         row = cur.fetchone()
 
-m = Basemap(llcrnrlon=-10.5,llcrnrlat=49.5,urcrnrlon=3.5,urcrnrlat=59.5,
-            resolution='h',projection='tmerc',lon_0=-4.36,lat_0=54.7)
+m = Basemap(llcrnrlon=-10.5, llcrnrlat=49.5, urcrnrlon=3.5, urcrnrlat=59.5,
+            resolution='h', projection='tmerc', lon_0=-4.36, lat_0=54.7)
 
 x, y = m(np.asarray(lon), np.asarray(lat))
 delay = np.asarray(delay)
@@ -109,8 +115,8 @@ m.drawmapboundary(fill_color='white')
 m.drawcoastlines()
 m.drawcountries()
 
-m.drawparallels(np.arange(-40,61.,2.))
-m.drawmeridians(np.arange(-20.,21.,2.))
+m.drawparallels(np.arange(-40., 61., 2.))
+m.drawmeridians(np.arange(-20., 21., 2.))
 
 m.contourf(x=x, y=y, data=delay, tri=True)
 
@@ -121,8 +127,8 @@ if not args.no_labels:
     for j in cities:
         x, y = m(cities[j][0], cities[j][1])
         m.plot(x, y, 'kx')
-        plt.text(x-8000,y+3500,j,size='small', color='k')
+        plt.text(x-8000, y+3500, j, size='small', color='k')
 
-plt.title("Isochron map of UK rail journeys from {} {}".format(station,
-                            args.DEPARTURE.strftime('%Y-%m-%d %H:%M')))
+plt.title("Isochron map of UK rail journeys from {} {}"
+          .format(station, args.DEPARTURE.strftime('%Y-%m-%d %H:%M')))
 plt.show()

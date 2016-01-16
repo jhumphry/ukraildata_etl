@@ -25,28 +25,38 @@ import nrcif._mockdb
 
 import psycopg2
 
-import sys, os, argparse, zipfile, contextlib
+import sys
+import os
+import argparse
+import zipfile
+import contextlib
 
 parser = argparse.ArgumentParser()
-parser.add_argument("NaPTAN", help = "The NaPTAN .zip file containing the required RailReferences.csv data")
+parser.add_argument("NaPTAN", help="The NaPTAN .zip file containing the "
+                                   "required RailReferences.csv data")
 
 parser_no = parser.add_argument_group("processing options")
-parser_no.add_argument("--no-index", help = "Don't create indexes in the database",
-                    action = "store_true", default = False)
+parser_no.add_argument("--no-index",
+                       help="Don't create indexes in the database",
+                       action="store_true", default=False)
 
 parser_db = parser.add_argument_group("database arguments")
-parser_db.add_argument("--dry-run", help = "Dump output to a file rather than sending to the database",
-                    nargs = "?", metavar = "LOG FILE", default = None, type=argparse.FileType("x"))
-parser_db.add_argument("--database", help = "PostgreSQL database to use (default ukraildata)",
-                    action = "store", default = "ukraildata")
-parser_db.add_argument("--user", help = "PostgreSQL user for upload",
-                    action = "store", default = os.environ.get("USER","postgres"))
-parser_db.add_argument("--password", help = "PostgreSQL user password",
-                    action = "store", default = "")
-parser_db.add_argument("--host", help = "PostgreSQL host (if using TCP/IP)",
-                    action = "store", default = None)
-parser_db.add_argument("--port", help = "PostgreSQL port (if required)",
-                    action = "store", type = int, default = 5432)
+parser_db.add_argument("--dry-run", help="Dump output to a file rather than "
+                                         "sending to the database",
+                       nargs="?", metavar="LOG FILE", default=None,
+                       type=argparse.FileType("x"))
+parser_db.add_argument("--database",
+                       help="PostgreSQL database to use (default ukraildata)",
+                       action="store", default="ukraildata")
+parser_db.add_argument("--user", help="PostgreSQL user for upload",
+                       action="store",
+                       default=os.environ.get("USER", "postgres"))
+parser_db.add_argument("--password", help="PostgreSQL user password",
+                       action="store", default="")
+parser_db.add_argument("--host", help="PostgreSQL host (if using TCP/IP)",
+                       action="store", default=None)
+parser_db.add_argument("--port", help="PostgreSQL port (if required)",
+                       action="store", type=int, default=5432)
 
 args = parser.parse_args()
 
@@ -58,21 +68,22 @@ if args.dry_run:
     connection = nrcif._mockdb.Connection(args.dry_run)
 else:
     if args.host:
-        connection = psycopg2.connect(  database = args.database,
-                                        user = args.user,
-                                        password = args.password,
-                                        host = args.host,
-                                        port = args.post)
+        connection = psycopg2.connect(database=args.database,
+                                      user=args.user,
+                                      password=args.password,
+                                      host=args.host,
+                                      port=args.post)
     else:
-        connection = psycopg2.connect(  database = args.database,
-                                        user = args.user,
-                                        password = args.password)
+        connection = psycopg2.connect(database=args.database,
+                                      user=args.user,
+                                      password=args.password)
 
-with zipfile.ZipFile(args.NaPTAN,"r") as naptan, \
+with zipfile.ZipFile(args.NaPTAN, "r") as naptan, \
         contextlib.closing(connection.cursor()) as cur:
 
-    if not 'RailReferences.csv' in naptan.namelist():
-        print("{} does not contain a RailReferences.csv file".format(args.NaPTAN))
+    if 'RailReferences.csv' not in naptan.namelist():
+        print("{} does not contain a RailReferences.csv file"
+              .format(args.NaPTAN))
         sys.exit(1)
 
     connection.autocommit = True
@@ -96,11 +107,12 @@ with zipfile.ZipFile(args.NaPTAN,"r") as naptan, \
     connection.autocommit = False
 
     fpp = naptan.open('RailReferences.csv', 'r')
-    fpp.readline() # Discard the header line
+    fpp.readline()  # Discard the header line
 
-    sql_placeholder = ",".join(["$"+str(x) for x in range(1,9)])
+    sql_placeholder = ",".join(["$"+str(x) for x in range(1, 9)])
     cur.execute('''PREPARE ins_naptan AS
-            INSERT INTO naptan.railreferences VALUES({});'''.format(sql_placeholder))
+            INSERT INTO naptan.railreferences VALUES({});'''
+                .format(sql_placeholder))
 
     py_placeholder = ",".join(["%s"]*8)
     ins_statement = '''EXECUTE ins_naptan ({});'''.format(py_placeholder)
@@ -108,10 +120,10 @@ with zipfile.ZipFile(args.NaPTAN,"r") as naptan, \
     with contextlib.closing(fpp) as fp:
         for record in fp:
             splitrecord = record.decode("ASCII").split(',')
-            for i in range(0,6):
-                splitrecord[i]=splitrecord[i].strip('"')
-            for i in range(6,8):
-                splitrecord[i]=int(splitrecord[i])
+            for i in range(0, 6):
+                splitrecord[i] = splitrecord[i].strip('"')
+            for i in range(6, 8):
+                splitrecord[i] = int(splitrecord[i])
             cur.execute(ins_statement, splitrecord[0:8])
     connection.commit()
 
@@ -119,4 +131,3 @@ connection.autocommit = True
 with contextlib.closing(connection.cursor()) as cur:
     cur.execute("VACUUM ANALYZE;")
 connection.close()
-

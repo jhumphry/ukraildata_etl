@@ -25,25 +25,33 @@ import nrcif._mockdb
 
 import psycopg2
 
-import sys, os, argparse
+import os
+import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("source_path", help = "The directory containing the SQL sources (default 'sql').",
-                    nargs = "?", metavar = "SOURCE PATH", default = "sql")
+parser.add_argument("source_path",
+                    help="The directory containing the SQL sources "
+                         "(default 'sql').",
+                    nargs="?", metavar="SOURCE PATH", default="sql")
 
 parser_db = parser.add_argument_group("database arguments")
-parser_db.add_argument("--dry-run", help = "Dump output to a file rather than sending to the database",
-                    nargs = "?", metavar = "LOG FILE", default = None, type=argparse.FileType("x"))
-parser_db.add_argument("--database", help = "PostgreSQL database to use (default ukraildata)",
-                    action = "store", default = "ukraildata")
-parser_db.add_argument("--user", help = "PostgreSQL user for upload",
-                    action = "store", default = os.environ.get("USER","postgres"))
-parser_db.add_argument("--password", help = "PostgreSQL user password",
-                    action = "store", default = "")
-parser_db.add_argument("--host", help = "PostgreSQL host (if using TCP/IP)",
-                    action = "store", default = None)
-parser_db.add_argument("--port", help = "PostgreSQL port (if required)",
-                    action = "store", type = int, default = 5432)
+parser_db.add_argument("--dry-run",
+                       help="Dump output to a file rather than sending to the "
+                            "database",
+                       nargs="?", metavar="LOG FILE", default=None,
+                       type=argparse.FileType("x"))
+parser_db.add_argument("--database",
+                       help="PostgreSQL database to use (default ukraildata)",
+                       action="store", default="ukraildata")
+parser_db.add_argument("--user", help="PostgreSQL user for upload",
+                       action="store",
+                       default=os.environ.get("USER", "postgres"))
+parser_db.add_argument("--password", help="PostgreSQL user password",
+                       action="store", default="")
+parser_db.add_argument("--host", help="PostgreSQL host (if using TCP/IP)",
+                       action="store", default=None)
+parser_db.add_argument("--port", help="PostgreSQL port (if required)",
+                       action="store", type=int, default=5432)
 
 args = parser.parse_args()
 
@@ -51,29 +59,29 @@ if args.dry_run:
     connection = nrcif._mockdb.Connection(args.dry_run)
 else:
     if args.host:
-        connection = psycopg2.connect(  database = args.database,
-                                        user = args.user,
-                                        password = args.password,
-                                        host = args.host,
-                                        port = args.post)
+        connection = psycopg2.connect(database=args.database,
+                                      user=args.user,
+                                      password=args.password,
+                                      host=args.host,
+                                      port=args.post)
     else:
-        connection = psycopg2.connect(  database = args.database,
-                                        user = args.user,
-                                        password = args.password)
+        connection = psycopg2.connect(database=args.database,
+                                      user=args.user,
+                                      password=args.password)
 
 sources = [
-'alf_get_direct_connections.sql',
-'mca_get_full_timetable.sql',
-'mca_get_train_timetable.sql',
-'msn_earliest_departure.sql',
-'msn_find_station.sql',
-'util_get_direct_connections.sql',
-'util_isochron_latlon.sql',
-'util_isochron.sql',
-'util_iterate_reachable.sql',
-'util_natgrid_en_to_latlon.sql',
-'ztr_get_full_timetable.sql'
-]
+           'alf_get_direct_connections.sql',
+           'mca_get_full_timetable.sql',
+           'mca_get_train_timetable.sql',
+           'msn_earliest_departure.sql',
+           'msn_find_station.sql',
+           'util_get_direct_connections.sql',
+           'util_isochron_latlon.sql',
+           'util_isochron.sql',
+           'util_iterate_reachable.sql',
+           'util_natgrid_en_to_latlon.sql',
+           'ztr_get_full_timetable.sql'
+           ]
 
 connection.autocommit = True
 
@@ -86,7 +94,7 @@ with connection.cursor() as cur:
         file_path = os.path.join(args.source_path, s)
         # Some tools may create .sql files with a superfluous BOM at the
         # start, even though they are supposed to by UTF-8...
-        fp = open(file_path, mode = 'r', encoding = 'utf_8_sig')
+        fp = open(file_path, mode='r', encoding='utf_8_sig')
         cur.execute(fp.read())
         fp.close()
 
@@ -94,4 +102,3 @@ with connection.cursor() as cur:
     cur.execute("VACUUM ANALYZE;")
 
 connection.close()
-
