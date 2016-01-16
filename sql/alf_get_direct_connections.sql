@@ -65,4 +65,5 @@ BEGIN
     GROUP BY location, train_uid;
 END;
 $B$
+STABLE
 LANGUAGE 'plpgsql' ;
