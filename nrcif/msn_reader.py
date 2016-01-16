@@ -31,24 +31,25 @@ class MSN(nrcif.CIFReader):
     '''A state machine with side-effects that handles MSN files.'''
 
     allowedtransitions = dict()
-    allowedtransitions["Start_Of_File"] = set(("A",))
-    allowedtransitions["A"] = set(("A", "B", "C", "L"))
-    allowedtransitions["B"] = set(("A", "B", "C", "L"))
-    allowedtransitions["C"] = set(("A", "C", "L"))
-    allowedtransitions["L"] = set(("L", "G", "R", "V", "Z", "0", "M", "-",
-                                   "E"))
-    allowedtransitions["G"] = set(("G", "R", "V", "Z", "0", "M", "-", "E"))
-    allowedtransitions["R"] = set(("R", "V", "Z", "0", "M", "-", "E"))
-    allowedtransitions["V"] = set(("V", "Z", "0", "M", "-", "E"))
+    allowedtransitions["Start_Of_File"] = frozenset(("A",))
+    allowedtransitions["A"] = frozenset(("A", "B", "C", "L"))
+    allowedtransitions["B"] = frozenset(("A", "B", "C", "L"))
+    allowedtransitions["C"] = frozenset(("A", "C", "L"))
+    allowedtransitions["L"] = frozenset(("L", "G", "R", "V", "Z", "0", "M",
+                                         "-", "E"))
+    allowedtransitions["G"] = frozenset(("G", "R", "V", "Z", "0", "M", "-",
+                                         "E"))
+    allowedtransitions["R"] = frozenset(("R", "V", "Z", "0", "M", "-", "E"))
+    allowedtransitions["V"] = frozenset(("V", "Z", "0", "M", "-", "E"))
 
     # I'm not going to worry about which order the trailers come in, or
     # if they are repeated...
-    allowedtransitions["Z"] = set(("Z", "0", "M", "-", " ", "E"))
-    allowedtransitions["0"] = set(("Z", "0", "M", "-", " ", "E"))
-    allowedtransitions["M"] = set(("Z", "0", "M", "-", " ", "E"))
-    allowedtransitions["-"] = set(("Z", "0", "M", "-", " ", "E"))
-    allowedtransitions[" "] = set(("Z", "0", "M", "-", " ", "E"))
-    allowedtransitions["E"] = set((None, ))
+    allowedtransitions["Z"] = frozenset(("Z", "0", "M", "-", " ", "E"))
+    allowedtransitions["0"] = frozenset(("Z", "0", "M", "-", " ", "E"))
+    allowedtransitions["M"] = frozenset(("Z", "0", "M", "-", " ", "E"))
+    allowedtransitions["-"] = frozenset(("Z", "0", "M", "-", " ", "E"))
+    allowedtransitions[" "] = frozenset(("Z", "0", "M", "-", " ", "E"))
+    allowedtransitions["E"] = frozenset((None, ))
 
     rslice = slice(0, 1)
 

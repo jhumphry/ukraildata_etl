@@ -37,23 +37,23 @@ class MCA(nrcif.CIFReader):
     # according to the documentation.
 
     allowedtransitions = dict()
-    allowedtransitions["Start_Of_File"] = set(("HD",))
-    allowedtransitions["HD"] = set(("TI", "TA", "TD", "AA", "BS", "ZZ"))
-    allowedtransitions["TI"] = set(("TI", "TA", "TD", "AA", "BS", "ZZ"))
-    allowedtransitions["TA"] = set(("TA", "TD", "AA", "BS", "ZZ"))
-    allowedtransitions["TD"] = set(("TD", "AA", "BS", "ZZ"))
-    allowedtransitions["AA"] = set(("AA", "BS", "ZZ"))
+    allowedtransitions["Start_Of_File"] = frozenset(("HD",))
+    allowedtransitions["HD"] = frozenset(("TI", "TA", "TD", "AA", "BS", "ZZ"))
+    allowedtransitions["TI"] = frozenset(("TI", "TA", "TD", "AA", "BS", "ZZ"))
+    allowedtransitions["TA"] = frozenset(("TA", "TD", "AA", "BS", "ZZ"))
+    allowedtransitions["TD"] = frozenset(("TD", "AA", "BS", "ZZ"))
+    allowedtransitions["AA"] = frozenset(("AA", "BS", "ZZ"))
     # A BS giving an STP cancellation can be followed directly by
     # another BS or by ZZ
-    allowedtransitions["BS"] = set(("BS", "BX", "TN", "LO", "ZZ"))
-    allowedtransitions["BX"] = set(("TN", "LO"))
-    allowedtransitions["TN"] = set(("LO",))
-    allowedtransitions["LO"] = set(("LI", "CR", "LT"))
-    allowedtransitions["LN"] = set(("LI", "CR", "LT", "BS", "ZZ"))
-    allowedtransitions["LI"] = set(("LI", "CR", "LT"))
-    allowedtransitions["CR"] = set(("LI", "LT"))
-    allowedtransitions["LT"] = set(("BS", "ZZ"))
-    allowedtransitions["ZZ"] = set((None,))
+    allowedtransitions["BS"] = frozenset(("BS", "BX", "TN", "LO", "ZZ"))
+    allowedtransitions["BX"] = frozenset(("TN", "LO"))
+    allowedtransitions["TN"] = frozenset(("LO",))
+    allowedtransitions["LO"] = frozenset(("LI", "CR", "LT"))
+    allowedtransitions["LN"] = frozenset(("LI", "CR", "LT", "BS", "ZZ"))
+    allowedtransitions["LI"] = frozenset(("LI", "CR", "LT"))
+    allowedtransitions["CR"] = frozenset(("LI", "LT"))
+    allowedtransitions["LT"] = frozenset(("BS", "ZZ"))
+    allowedtransitions["ZZ"] = frozenset((None,))
 
     layouts = nrcif.records.layouts
 
