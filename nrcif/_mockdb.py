@@ -18,6 +18,7 @@
 
 ''' mockdb.py - a mock DB API connection and cursor definition'''
 
+
 class Cursor(object):
 
     def __init__(self, fp):
@@ -29,11 +30,13 @@ class Cursor(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         return False  # Don't suppress exceptions
 
-    def execute(self, sql, params = None):
-        self.fp.write("Executed SQL: '{}' with params '{}'\n".format(sql, repr(params)))
+    def execute(self, sql, params=None):
+        self.fp.write("Executed SQL: '{}' with params '{}'\n"
+                      .format(sql, repr(params)))
 
     def close(self):
         pass
+
 
 class Connection(object):
 

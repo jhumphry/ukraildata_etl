@@ -16,11 +16,12 @@
 #  MA 02110-1301, USA.
 #
 
-'''Generate SQL that will create a suitable schema for storing data from ATOC
-.MSN timetable files. This is done dynamically to ensure it keeps in sync with
-the definitions in nrcif.py and nrcif_fields.py'''
+'''Generate SQL that will create a suitable schema for storing data
+from ATOC .MSN timetable files. This is done dynamically to ensure it
+keeps in sync with the definitions in nrcif.py and nrcif_fields.py'''
 
 from ..msn_records import layouts
+
 
 def gen_sql(DDL, CONS):
 

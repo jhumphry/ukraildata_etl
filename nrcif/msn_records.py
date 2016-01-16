@@ -18,14 +18,14 @@
 
 '''msn_records - Definition of MSN records
 
-This module defines the record types found in ATOC Master Station Names files as
-provided by data.atoc.org .'''
+This module defines the record types found in ATOC Master Station Names
+files as provided by data.atoc.org .'''
 
 from nrcif.fields import *
 from nrcif import CIFRecord
 
-# The following is a dictionary of standard MSN CIF record types, keyed by the
-# characters that must appear at the start of a MSN CIF record.
+# The following is a dictionary of standard MSN CIF record types, keyed
+# by the characters that must appear at the start of a MSN CIF record.
 
 layouts = dict()
 
@@ -37,7 +37,8 @@ layouts["A"] = CIFRecord("Station Detail", (
                             TextField("TIPLOC Code", 7),
                             TextField("Subsidiary 3-Alpha Code", 3),
                             SpareField("Spaces 2", 3),
-                            TextField("_3-Alpha Code",3), # to avoid conflict
+                            # _ used to avoid conflict
+                            TextField("_3-Alpha Code", 3),
                             IntegerField("Easting", 5),
                             FlagField("Estimated", " E"),
                             IntegerField("Northing", 5),

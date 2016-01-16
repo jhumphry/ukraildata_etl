@@ -20,18 +20,20 @@
 
 '''nrcif - A module to read the CIF format for loading into an SQL database
 
-This Python 3 module is intended to provide tools for reading the Network
-Rail CIF format used to distribute rail timetables in the UK. Due to the
-discrepancies between the available public documentation of the format and
-the actual files, this module provide basic CIF tools that will need to be
+This Python 3 module is intended to provide tools for reading the Network Rail
+CIF format used to distribute rail timetables in the UK. Due to the
+discrepancies between the available public documentation of the format and the
+actual files, this module provide basic CIF tools that will need to be
 customised for each source of CIF files.'''
 
 
 class UnexpectedCIFRecord(Exception):
     pass
 
+
 class CIFReader(object):
-    '''A state machine with side-effects that forms a base for handling CIF files.'''
+    '''A state machine with side-effects that forms a base for handling CIF
+    files.'''
 
     # The following is a dictionary of sets of record types allowed after a
     # given record type.
@@ -42,7 +44,7 @@ class CIFReader(object):
     process_methods = dict()
 
     # Which part of a record gives the type of the record?
-    rslice = slice(0,2)
+    rslice = slice(0, 2)
 
     # How wide is a standard record (yes, it varies...)
     rwidth = 80
@@ -70,24 +72,27 @@ class CIFReader(object):
             except AttributeError:
                 pass
 
-    def prepare_sql_insert(self, rtype, tablename, number_params = None):
+    def prepare_sql_insert(self, rtype, tablename, number_params=None):
         '''Prepare a suitable SQL insert statement for record type rtype in
-        the schema self.schema, the table named tablename and with the specified
-        number of parameters (inferred from the record type if not specified.'''
+        the schema self.schema, the table named tablename and with the
+        specified number of parameters (inferred from the record type if not
+        specified.'''
 
         if not number_params:
             number_params = self.layouts[rtype].sql_width
 
-        sql_params = ",".join(["$"+str(x) for x in range(1,number_params+1)])
-        params = ",".join(["%s" for x in range(1,number_params+1)])
+        sql_params = ",".join(["$"+str(x)
+                               for x in range(1, number_params+1)])
+
+        params = ",".join(["%s" for x in range(1, number_params+1)])
 
         self.cur.execute('''PREPARE ins_{0}_{1} AS
             INSERT INTO {0}.{1} VALUES({2});'''.format(self.schema,
-                                                        tablename,
-                                                        sql_params))
+                                                       tablename,
+                                                       sql_params))
         self.sql[rtype] = "EXECUTE ins_{0}_{1} ({2});".format(self.schema,
-                                                                tablename,
-                                                                params)
+                                                              tablename,
+                                                              params)
 
     def process(self, record):
         '''Process a record and call any specialist handlers that may have been
@@ -99,12 +104,15 @@ class CIFReader(object):
 
         rtype = record[self.rslice]
         if rtype not in self.allowedtransitions[self.state]:
-            raise UnexpectedCIFRecord("Unexpected '{0}' record following '{1}' record".format(rtype, self.state))
+            raise UnexpectedCIFRecord("Unexpected '{0}' record "
+                                      "following '{1}' record"
+                                      .format(rtype, self.state))
 
         self.state = rtype
         self.context[rtype] = self.layouts[rtype].read(record)
         if rtype in self.process_methods:
             self.process_methods[rtype]()
+
 
 class CIFRecord(object):
     '''A class representing a record of a fixed-format CIF file'''
@@ -112,8 +120,8 @@ class CIFRecord(object):
     def __init__(self, name, fields):
         self.name = name
         self.fields = list(fields)
-        self.width = sum( (x.width for x in self.fields) )
-        self.sql_width = sum ( (1 for x in self.fields if x.sql_type) )
+        self.width = sum((x.width for x in self.fields))
+        self.sql_width = sum((1 for x in self.fields if x.sql_type))
 
     def read(self, text):
         '''Convert a fixed-format record into a list of Python values'''
@@ -123,7 +131,7 @@ class CIFRecord(object):
 
         for field in self.fields:
             t = field.read(text[index:index+field.width])
-            if field.sql_type != None:
+            if field.sql_type is not None:
                 result.append(t)
             index += field.width
 
@@ -137,14 +145,15 @@ class CIFRecord(object):
 
         for field in self.fields:
             t = field.read(text[index:index+field.width])
-            if field.sql_type != None:
+            if field.sql_type is not None:
                 result[field.name] = t
             index += field.width
 
         return result
 
     def generate_sql_ddl(self):
-        '''Generate the description of the record's data fields in SQL format'''
+        '''Generate the description of the record's data fields in SQL
+        format'''
 
         result = ""
         first_field = True
@@ -154,7 +163,8 @@ class CIFRecord(object):
                     first_field = False
                 else:
                     result += ",\n"
-                clean_name = field.name.replace(" ","_").replace("-","_").lower()
+                clean_name = field.name.replace(" ", "_")\
+                    .replace("-", "_").lower()
                 result += "\t{0}\t\t{1}".format(clean_name,
                                                 field.sql_type)
         return result
@@ -169,5 +179,6 @@ class DummyCursor(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         return False  # Don't suppress exceptions
 
-    def execute(self, sql, params = None):
-        print("Dummy cursor executed SQL: '{}' with params '{}'".format(sql, repr(params)))
+    def execute(self, sql, params=None):
+        print("Dummy cursor executed SQL: '{}' with params '{}'"
+              .format(sql, repr(params)))

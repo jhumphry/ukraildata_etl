@@ -20,19 +20,22 @@
 
 This module reads data from an ZTR file from ATOC containing timetable
 information for manual supplements to the rail timetable (ferries etc) and
-inserts it into a database. The module has to be provided with a database cursor
-initially, and then fed with lines/records one at a time.'''
+inserts it into a database. The module has to be provided with a database
+cursor initially, and then fed with lines/records one at a time.'''
 
 import copy
 
-import nrcif, nrcif.records, nrcif.mca_reader
+import nrcif
+import nrcif.records
+import nrcif.mca_reader
 
 from nrcif.fields import *
 from nrcif import CIFRecord
 
+# All other fields seem to be missing
 reduced_hd = CIFRecord("Header Record", (
                             EnforceField("Record Identity", "HD"),
-                            SpareField("Spare", 79) # All other fields seem to be missing
+                            SpareField("Spare", 79)
                             ))
 
 corrected_bs = copy.deepcopy(nrcif.records.layouts["BS"])
@@ -42,9 +45,10 @@ corrected_bs.fields[4] = YYMMDD_1956_DateField("Date Runs To")
 corrected_bx = copy.deepcopy(nrcif.records.layouts["BX"])
 corrected_bx.fields[4] = FlagField("Applicable Timetable Code", " YN")
 
+
 class ZTR(nrcif.mca_reader.MCA):
-    '''An extension of the MCA reader to deal with the slightly cut-back
-    ZTR format.'''
+    '''An extension of the MCA reader to deal with the slightly cut-back ZTR
+    format.'''
 
     schema = "ztr"
 
@@ -54,14 +58,17 @@ class ZTR(nrcif.mca_reader.MCA):
     layouts["BX"] = corrected_bx
 
     def __init__(self, cur):
-        '''Requires a DB API cursor to the database that will contain the data'''
+        '''Requires a DB API cursor to the database that will contain the
+        data'''
 
         super().__init__(cur)
+
 
 def main():
     import sys
     if len(sys.argv) != 2:
-        print("When called as a script, needs to be provided with an ZTR file to process")
+        print("When called as a script, needs to be provided with a "
+              "ZTR file to process")
         sys.exit(1)
     cur = nrcif.DummyCursor()
     ztr = ZTR(cur)

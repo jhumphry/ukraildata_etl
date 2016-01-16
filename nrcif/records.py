@@ -60,7 +60,7 @@ layouts["BS"] = CIFRecord("Basic Schedule", (
                             FlagField("Portion ID", " Z01248"),
                             TextField("Power Type", 3),
                             TextField("Timing Load", 4),
-                            IntegerField("Speed", 3, optional = True),
+                            IntegerField("Speed", 3, optional=True),
                             TextField("Operating Characteristics", 6),
                             FlagField("Train Class", " BS"),
                             FlagField("Sleepers", " BFS"),
@@ -100,14 +100,14 @@ layouts["LO"] = CIFRecord("Origin Location", (
 layouts["LI"] = CIFRecord("Intermediate Location", (
                             EnforceField("Record Identity", "LI"),
                             TextField("Location", 8),
-                            TimeHField("Scheduled Arrival", optional = True),
-                            TimeHField("Scheduled Departure", optional = True),
-                            TimeHField("Scheduled Pass", optional = True),
+                            TimeHField("Scheduled Arrival", optional=True),
+                            TimeHField("Scheduled Departure", optional=True),
+                            TimeHField("Scheduled Pass", optional=True),
                             TimeField("Public Arrival"),
                             TimeField("Public Departure"),
                             TextField("Platform", 3),
                             TextField("Line", 3),
-                            TextField("_Path", 3), # to avoid conflict
+                            TextField("_Path", 3),  # to avoid conflict
                             ActivityField("Activity"),
                             TextField("Engineering Allowance", 2),
                             TextField("Pathing Allowance", 2),
@@ -126,7 +126,7 @@ layouts["CR"] = CIFRecord("Changes en Route", (
                             FlagField("Portion ID", " Z01248"),
                             TextField("Power Type", 3),
                             TextField("Timing Load", 4),
-                            IntegerField("Speed", 3, optional = True),
+                            IntegerField("Speed", 3, optional=True),
                             TextField("Operating Characteristics", 6),
                             FlagField("Train Class", " BS"),
                             FlagField("Sleepers", " BFS"),
@@ -146,7 +146,7 @@ layouts["LT"] = CIFRecord("Terminating Location", (
                             TimeHField("Scheduled Arrival"),
                             TimeField("Public Arrival"),
                             TextField("Platform", 3),
-                            TextField("_Path", 3), # to avoid conflict
+                            TextField("_Path", 3),  # to avoid conflict
                             ActivityField("Activity"),
                             SpareField("Spare", 43)
                             ))
@@ -192,7 +192,8 @@ layouts["TI"] = CIFRecord("TIPLOC Insert", (
                             TextField("Stanox", 5),
                             SpareField("PO MCP Code", 4),
                             TextField("CRS Code", 3),
-                            TextField("_16 character description", 16), # to avoid conflict
+                            # _ used to avoid conflict
+                            TextField("_16 character description", 16),
                             SpareField("Spare", 8)
                             ))
 
@@ -206,7 +207,8 @@ layouts["TA"] = CIFRecord("TIPLOC Amend", (
                             TextField("Stanox", 5),
                             SpareField("PO MCP Code", 4),
                             TextField("CRS Code", 3),
-                            TextField("_16 character description", 16), # to avoid conflict
+                            # _ used to avoid conflict
+                            TextField("_16 character description", 16),
                             TextField("New TIPLOC", 7),
                             SpareField("Spare", 1)
                             ))
