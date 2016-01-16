@@ -37,7 +37,7 @@ parser_db.add_argument("--dry-run", help = "Dump output to a file rather than se
 parser_db.add_argument("--database", help = "PostgreSQL database to use (default ukraildata)",
                     action = "store", default = "ukraildata")
 parser_db.add_argument("--user", help = "PostgreSQL user for upload",
-                    action = "store", default = os.getlogin())
+                    action = "store", default = os.environ.get("USER","postgres"))
 parser_db.add_argument("--password", help = "PostgreSQL user password",
                     action = "store", default = "")
 parser_db.add_argument("--host", help = "PostgreSQL host (if using TCP/IP)",
