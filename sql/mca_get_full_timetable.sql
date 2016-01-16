@@ -51,14 +51,14 @@ RETURNS TABLE ( train_uid character(6),
     -- The locations CTE just joins together the three location tables and fills in NULLs as appropriate
     -- adding the WHERE condition in help significantly with the run-time.
         SELECT train_uid, date_runs_from, stp_indicator,
-            loc_order, FALSE AS xmidnight, LEFT(location, 7) AS location,
+            loc_order, FALSE AS xmidnight, location,
             NULL AS scheduled_arrival, scheduled_departure, NULL AS scheduled_pass,
             platform
         FROM mca.origin_location
         WHERE   date_runs_from <= $1
         UNION ALL
         SELECT train_uid, date_runs_from, stp_indicator,
-            loc_order, xmidnight, LEFT(location, 7) AS location,
+            loc_order, xmidnight, location,
             scheduled_arrival, scheduled_departure, scheduled_pass,
             platform
         FROM mca.intermediate_location
@@ -66,7 +66,7 @@ RETURNS TABLE ( train_uid character(6),
             AND NOT xmidnight
         UNION ALL
         SELECT train_uid, date_runs_from, stp_indicator,
-            loc_order, xmidnight, LEFT(location, 7) AS location,
+            loc_order, xmidnight, location,
             scheduled_arrival, NULL AS scheduled_departure, NULL AS scheduled_pass,
             platform
         FROM mca.terminating_location
@@ -74,7 +74,7 @@ RETURNS TABLE ( train_uid character(6),
             AND NOT xmidnight
     ), locations_p AS (
         SELECT train_uid, date_runs_from, stp_indicator,
-            loc_order, xmidnight, LEFT(location, 7) AS location,
+            loc_order, xmidnight, location,
             scheduled_arrival, scheduled_departure, scheduled_pass,
             platform
         FROM mca.intermediate_location
@@ -82,7 +82,7 @@ RETURNS TABLE ( train_uid character(6),
             AND xmidnight
         UNION ALL
         SELECT train_uid, date_runs_from, stp_indicator,
-            loc_order, xmidnight, LEFT(location, 7) AS location,
+            loc_order, xmidnight, location,
             scheduled_arrival, NULL AS scheduled_departure, NULL AS scheduled_pass,
             platform
         FROM mca.terminating_location

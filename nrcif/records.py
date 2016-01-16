@@ -85,7 +85,8 @@ layouts["BX"] = CIFRecord("Basic Schedule Extra Details", (
 
 layouts["LO"] = CIFRecord("Origin Location", (
                             EnforceField("Record Identity", "LO"),
-                            TextField("Location", 8),
+                            TextField("Location", 7),
+                            TextField("Location Suffix", 1),
                             TimeHField("Scheduled Departure"),
                             TimeField("Public Departure"),
                             TextField("Platform", 3),
@@ -99,7 +100,8 @@ layouts["LO"] = CIFRecord("Origin Location", (
 
 layouts["LI"] = CIFRecord("Intermediate Location", (
                             EnforceField("Record Identity", "LI"),
-                            TextField("Location", 8),
+                            TextField("Location", 7),
+                            TextField("Location Suffix", 1),
                             TimeHField("Scheduled Arrival", optional=True),
                             TimeHField("Scheduled Departure", optional=True),
                             TimeHField("Scheduled Pass", optional=True),
@@ -117,7 +119,8 @@ layouts["LI"] = CIFRecord("Intermediate Location", (
 
 layouts["CR"] = CIFRecord("Changes en Route", (
                             EnforceField("Record Identity", "CR"),
-                            TextField("Location", 8),
+                            TextField("Location", 7),
+                            TextField("Location Suffix", 1),
                             TextField("Train Category", 2),
                             TextField("Train Identity", 4),
                             TextField("Headcode", 4),
@@ -142,7 +145,8 @@ layouts["CR"] = CIFRecord("Changes en Route", (
 
 layouts["LT"] = CIFRecord("Terminating Location", (
                             EnforceField("Record Identity", "LT"),
-                            TextField("Location", 8),
+                            TextField("Location", 7),
+                            TextField("Location Suffix", 1),
                             TimeHField("Scheduled Arrival"),
                             TimeField("Public Arrival"),
                             TextField("Platform", 3),
