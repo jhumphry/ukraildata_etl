@@ -44,8 +44,8 @@ class MCA(nrcif.CIFReader):
     allowedtransitions["TD"] = set(("TD", "AA", "BS", "ZZ"))
     allowedtransitions["AA"] = set(("AA", "BS", "ZZ"))
     # A BS giving an STP cancellation can be followed directly by
-    # another BS
-    allowedtransitions["BS"] = set(("BS", "BX", "TN", "LO"))
+    # another BS or by ZZ
+    allowedtransitions["BS"] = set(("BS", "BX", "TN", "LO", "ZZ"))
     allowedtransitions["BX"] = set(("TN", "LO"))
     allowedtransitions["TN"] = set(("LO",))
     allowedtransitions["LO"] = set(("LI", "CR", "LT"))
