@@ -18,11 +18,15 @@
 
 ''' mockdb.py - a mock DB API connection and cursor definition'''
 
+import sys
+
 
 class Cursor(object):
+    '''A dummy database cursor object that implements a subset of DB-API
+    methods and outputs the requests to a file or stdout.'''
 
-    def __init__(self, fp):
-        self.fp = fp
+    def __init__(self, log_file=sys.stdout):
+        self.log_file = log_file
 
     def __enter__(self):
         return self
@@ -31,24 +35,39 @@ class Cursor(object):
         return False  # Don't suppress exceptions
 
     def execute(self, sql, params=None):
-        self.fp.write("Executed SQL: '{}' with params '{}'\n"
-                      .format(sql, repr(params)))
+        '''Log a request to execute some SQL with given parameters'''
+
+        self.log_file.write("Executed SQL: '{}' with params '{}'\n"
+                            .format(sql, repr(params)))
 
     def close(self):
+        '''Close the dummy database cursor object. Does not close the
+        associated output file.'''
+
         pass
 
 
 class Connection(object):
+    '''A dummy database object that implements a subset of DB-API methods and
+    outputs the requests to a file or stdout.'''
 
-    def __init__(self, fp):
-        self.fp = fp
+    def __init__(self, log_file=sys.stdout):
+        self.log_file = log_file
 
     def cursor(self):
-        return Cursor(self.fp)
+        '''Create a dummy cursor which uses the same output file.'''
+
+        return Cursor(self.log_file)
 
     def commit(self):
-        self.fp.write("Committed transaction\n")
-        self.fp.flush()
+        '''Log a request to commit a transaction.'''
+
+        self.log_file.write("Committed transaction\n")
+        self.log_file.flush()
 
     def close(self):
-        self.fp.close()
+        '''Close the dummy database object. Closes the file associated with
+        the object unless that is sys.stdout.'''
+
+        if self.log_file != sys.stdout:
+            self.log_file.close()

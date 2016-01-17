@@ -25,6 +25,7 @@ at a time. '''
 
 import nrcif
 import nrcif.msn_records
+import nrcif._mockdb
 
 
 class MSN(nrcif.CIFReader):
@@ -96,12 +97,12 @@ def main():
         print("When called as a script, needs to be provided with an "
               "MSN file to process")
         sys.exit(1)
-    cur = nrcif.DummyCursor()
+    cur = nrcif._mockdb.Cursor()
     msn = MSN(cur)
-    fpp = open(sys.argv[1], 'r')
-    fpp.readline()  # Discard the header
-    with contextlib.closing(fpp) as fp:
-        for line in fp:
+    input_file = open(sys.argv[1], 'r')
+    input_file.readline()  # Discard the header
+    with contextlib.closing(input_file) as remaining_input_file:
+        for line in remaining_input_file:
             msn.process(line)
     print("Processing complete")
 

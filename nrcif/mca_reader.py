@@ -25,6 +25,7 @@ lines/records one at a time.'''
 
 import nrcif
 import nrcif.records
+import nrcif._mockdb
 
 
 class MCA(nrcif.CIFReader):
@@ -67,7 +68,7 @@ class MCA(nrcif.CIFReader):
         self.train_UID = None
         self.date_runs_from = None
         self.stp_indicator = None
-        self.loc_order = None
+        self.LOC_order = 0
         self.xmidnight = None
         self.last_time = None
 
@@ -96,18 +97,23 @@ class MCA(nrcif.CIFReader):
             self.prepare_sql_insert(i, tablename)
 
     def process_TI(self):
+        '''Process TI (TIPLOC Insert) records'''
         self.cur.execute(self.sql["TI"], self.context["TI"])
 
     def process_TA(self):
+        '''Process TA (TIPLOC Amend) records'''
         self.cur.execute(self.sql["TA"], self.context["TA"])
 
     def process_TD(self):
+        '''Process TD (TIPLOC Delete) records'''
         self.cur.execute(self.sql["TD"], self.context["TD"])
 
     def process_AA(self):
+        '''Process AA (Associations) records'''
         self.cur.execute(self.sql["AA"], self.context["AA"])
 
     def process_BS(self):
+        '''Process BS (Basic Schedule) records'''
 
         self.context["BX"] = [None] * self.layouts["BX"].sql_width
         self.context["TN"] = [None] * self.layouts["TN"].sql_width
@@ -126,6 +132,7 @@ class MCA(nrcif.CIFReader):
                              self.context["TN"])
 
     def process_LO(self):
+        '''Process LO (Origin Location) records'''
 
         # Note - the LO state can only be reached from BS, so there
         # must have been a valid BS record before this point. However
@@ -144,6 +151,8 @@ class MCA(nrcif.CIFReader):
                                           False] + self.context["LO"])
 
     def process_LI(self):
+        '''Process LI (Intermediate Location) records'''
+
         self.LOC_order += 1
         current_time = (self.context["LI"][1] or
                         self.context["LI"][2] or
@@ -160,6 +169,8 @@ class MCA(nrcif.CIFReader):
                                           self.xmidnight] + self.context["LI"])
 
     def process_CR(self):
+        '''Process CR (Changes-en-route) records'''
+
         self.cur.execute(self.sql["CR"], [self.train_UID,
                                           self.date_runs_from,
                                           self.stp_indicator,
@@ -167,6 +178,8 @@ class MCA(nrcif.CIFReader):
                                           self.xmidnight] + self.context["CR"])
 
     def process_LT(self):
+        '''Process LT (Terminating Location) records'''
+
         self.LOC_order += 1
         if not self.xmidnight and self.context["LT"][1] < self.last_time:
             self.xmidnight = True
@@ -179,6 +192,8 @@ class MCA(nrcif.CIFReader):
                                           self.xmidnight] + self.context["LT"])
 
     def process_LN(self):
+        '''Process LN (Location Notes) records'''
+
         self.cur.execute(self.sql["LN"], [self.train_UID,
                                           self.date_runs_from,
                                           self.stp_indicator,
@@ -187,15 +202,18 @@ class MCA(nrcif.CIFReader):
 
 
 def main():
+    '''When called as a script, read an MCA file and output the SQL that would
+    be generated to stdout.'''
+
     import sys
     if len(sys.argv) != 2:
         print("When called as a script, needs to be provided with an "
               "MCA file to process")
         sys.exit(1)
-    cur = nrcif.DummyCursor()
+    cur = nrcif._mockdb.Cursor()
     mca = MCA(cur)
-    with open(sys.argv[1], 'r') as fp:
-        for line in fp:
+    with open(sys.argv[1], 'r') as input_file:
+        for line in input_file:
             mca.process(line)
     print("Processing complete")
 

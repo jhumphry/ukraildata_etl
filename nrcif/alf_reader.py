@@ -25,6 +25,7 @@ accessible by foot or tram.'''
 import collections
 
 from nrcif.fields import *
+import nrcif._mockdb
 
 
 class ALF(object):
@@ -78,10 +79,10 @@ def main():
         print("When called as a script, needs to be provided with an "
               "ALF file to process")
         sys.exit(1)
-    cur = nrcif.DummyCursor()
+    cur = nrcif._mockdb.Cursor()
     alf = ALF(cur)
-    with open(sys.argv[1], 'r') as fp:
-        for line in fp:
+    with open(sys.argv[1], 'r') as input_file:
+        for line in input_file:
             alf.process(line)
     print("Processing complete")
 

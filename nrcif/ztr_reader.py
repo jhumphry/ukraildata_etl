@@ -28,6 +28,7 @@ import copy
 import nrcif
 import nrcif.records
 import nrcif.mca_reader
+import nrcif._mockdb
 
 from nrcif.fields import *
 from nrcif import CIFRecord
@@ -70,10 +71,10 @@ def main():
         print("When called as a script, needs to be provided with a "
               "ZTR file to process")
         sys.exit(1)
-    cur = nrcif.DummyCursor()
+    cur = nrcif._mockdb.Cursor()
     ztr = ZTR(cur)
-    with open(sys.argv[1], 'r') as fp:
-        for line in fp:
+    with open(sys.argv[1], 'r') as input_file:
+        for line in input_file:
             ztr.process(line)
     print("Processing complete")
 

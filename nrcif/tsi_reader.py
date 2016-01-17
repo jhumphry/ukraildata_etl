@@ -24,6 +24,7 @@ TOCs (for example, where a particular company has its own set of
 platforms at some distance from the others.'''
 
 from nrcif.fields import *
+import nrcif._mockdb
 
 
 class TSI(object):
@@ -60,10 +61,10 @@ def main():
         print("When called as a script, needs to be provided with a TSI"
               " file to process")
         sys.exit(1)
-    cur = nrcif.DummyCursor()
+    cur = nrcif._mockdb.Cursor()
     tsi = TSI(cur)
-    with open(sys.argv[1], 'r') as fp:
-        for line in fp:
+    with open(sys.argv[1], 'r') as input_file:
+        for line in input_file:
             tsi.process(line)
     print("Processing complete")
 
