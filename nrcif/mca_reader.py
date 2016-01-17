@@ -27,7 +27,7 @@ lines/records one at a time.'''
 
 import nrcif
 import nrcif.records
-import nrcif._mockdb
+import nrcif.mockdb
 
 
 class MCA(nrcif.CIFReader):
@@ -203,4 +203,4 @@ class MCA(nrcif.CIFReader):
                                           self.xmidnight] + self.context["LN"])
 
 if __name__ == "__main__":
-    nrcif._mockdb.demonstrate_reader(MCA)
+    nrcif.mockdb.demonstrate_reader(MCA)

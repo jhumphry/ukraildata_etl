@@ -25,7 +25,7 @@ accessible by foot or tram.'''
 import collections
 
 from nrcif.fields import *
-import nrcif._mockdb
+import nrcif.mockdb
 
 
 class ALF(object):
@@ -75,4 +75,4 @@ class ALF(object):
 
 
 if __name__ == "__main__":
-    nrcif._mockdb.demonstrate_reader(ALF)
+    nrcif.mockdb.demonstrate_reader(ALF)

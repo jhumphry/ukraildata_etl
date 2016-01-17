@@ -29,7 +29,7 @@ import contextlib
 
 import psycopg2
 
-import nrcif._mockdb
+import nrcif.mockdb
 
 
 parser = argparse.ArgumentParser()
@@ -66,7 +66,7 @@ if not zipfile.is_zipfile(args.NaPTAN):
     sys.exit(1)
 
 if args.dry_run:
-    connection = nrcif._mockdb.Connection(args.dry_run)
+    connection = nrcif.mockdb.Connection(args.dry_run)
 else:
     if args.host:
         connection = psycopg2.connect(database=args.database,

@@ -30,7 +30,7 @@ import copy
 import nrcif
 import nrcif.records
 import nrcif.mca_reader
-import nrcif._mockdb
+import nrcif.mockdb
 
 from nrcif.fields import *
 from nrcif import CIFRecord
@@ -68,4 +68,4 @@ class ZTR(nrcif.mca_reader.MCA):
 
 
 if __name__ == "__main__":
-    nrcif._mockdb.demonstrate_reader(ZTR)
+    nrcif.mockdb.demonstrate_reader(ZTR)

@@ -26,7 +26,7 @@ TOCs (for example, where a particular company has its own set of
 platforms at some distance from the others.'''
 
 from nrcif.fields import *
-import nrcif._mockdb
+import nrcif.mockdb
 
 
 class TSI(object):
@@ -60,4 +60,4 @@ class TSI(object):
 
 
 if __name__ == "__main__":
-    nrcif._mockdb.demonstrate_reader(TSI)
+    nrcif.mockdb.demonstrate_reader(TSI)

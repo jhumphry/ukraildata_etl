@@ -26,7 +26,7 @@ import argparse
 
 import psycopg2
 
-import nrcif._mockdb
+import nrcif.mockdb
 
 parser = argparse.ArgumentParser()
 parser.add_argument("source_path",
@@ -56,7 +56,7 @@ parser_db.add_argument("--port", help="PostgreSQL port (if required)",
 args = parser.parse_args()
 
 if args.dry_run:
-    connection = nrcif._mockdb.Connection(args.dry_run)
+    connection = nrcif.mockdb.Connection(args.dry_run)
 else:
     if args.host:
         connection = psycopg2.connect(database=args.database,
