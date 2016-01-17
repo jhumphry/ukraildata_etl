@@ -1,6 +1,6 @@
 # extract_ttis.py
 
-# Copyright 2013 - 2015 James Humphry
+# Copyright 2013 - 2016, James Humphry
 
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
