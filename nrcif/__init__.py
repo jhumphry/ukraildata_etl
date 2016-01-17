@@ -28,6 +28,11 @@ customised for each source of CIF files.'''
 
 
 class UnexpectedCIFRecord(Exception):
+    '''An exception raised when a record being processed is not of a valid
+    type given the context - for example if a LI (Intermediate Location)
+    record follows immediately after a LT (Terminating Location) record in an
+    MCA file.'''
+
     pass
 
 

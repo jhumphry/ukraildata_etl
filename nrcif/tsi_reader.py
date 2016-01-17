@@ -43,6 +43,9 @@ class TSI(object):
         self.cur = cur
 
     def process(self, record):
+        '''TSI files are in a simple CSV format with five columns. This
+        function takes in a record and produces the appropriate SQL to insert
+        the data into the database.'''
 
         fields = record.rstrip().split(",")
         if len(fields) != 5:

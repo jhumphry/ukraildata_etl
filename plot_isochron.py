@@ -33,8 +33,10 @@ from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
 
 
-def read_departure(s):
-    return datetime.datetime.strptime(s, '%Y-%m-%d %H:%M')
+def read_departure(date_argument):
+    '''Convert the date_argument string to a datetime object'''
+
+    return datetime.datetime.strptime(date_argument, '%Y-%m-%d %H:%M')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("STATION", help="The TIPLOC code or station name")

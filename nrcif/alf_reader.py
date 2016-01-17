@@ -54,7 +54,9 @@ class ALF(object):
                           .format(",".join(["%s"]*10))
 
     def process(self, record):
-
+        '''ALF files are in a CSV format with KEY=VALUE in each column. This
+        function takes in a record and produces the appropriate SQL to insert
+        the data into the database.'''
         fields = record.rstrip().split(",")
 
         values = {}

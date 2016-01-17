@@ -83,16 +83,23 @@ class MSN(nrcif.CIFReader):
             self.prepare_sql_insert(i, tablename)
 
     def process_A(self):
+        '''Process station details (A) record'''
         self.cur.execute(self.sql["A"], self.context["A"])
 
     def process_L(self):
+        '''Process station alias (L) record'''
         self.cur.execute(self.sql["L"], self.context["L"])
 
     def process_V(self):
+        '''Process routeing groups (V) record'''
         self.cur.execute(self.sql["V"], self.context["V"])
 
 
 def main():
+    '''When called as a script, the MSN class should read an MSN file and
+    output the SQL that would be generated to stdout. Due to the header this
+    code is not identical to the other readers.'''
+
     import sys
     import contextlib
     if len(sys.argv) != 2:
