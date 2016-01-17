@@ -70,18 +70,18 @@ else:
                                       password=args.password)
 
 sources = [
-           'alf_get_direct_connections.sql',
-           'mca_get_full_timetable.sql',
-           'mca_get_train_timetable.sql',
-           'msn_earliest_departure.sql',
-           'msn_find_station.sql',
-           'util_get_direct_connections.sql',
-           'util_isochron_latlon.sql',
-           'util_isochron.sql',
-           'util_iterate_reachable.sql',
-           'util_natgrid_en_to_latlon.sql',
-           'ztr_get_full_timetable.sql'
-           ]
+    'alf_get_direct_connections.sql',
+    'mca_get_full_timetable.sql',
+    'mca_get_train_timetable.sql',
+    'msn_earliest_departure.sql',
+    'msn_find_station.sql',
+    'util_get_direct_connections.sql',
+    'util_isochron_latlon.sql',
+    'util_isochron.sql',
+    'util_iterate_reachable.sql',
+    'util_natgrid_en_to_latlon.sql',
+    'ztr_get_full_timetable.sql'
+    ]
 
 connection.autocommit = True
 

@@ -126,14 +126,14 @@ with zipfile.ZipFile(args.TTIS, "r") as ttis, \
         connection.cursor() as cur:
 
     if args.no_sync_commit:
-            cur.execute("SET SESSION synchronous_commit=off;")
+        cur.execute("SET SESSION synchronous_commit=off;")
 
     if args.work_mem != 0:
-            cur.execute("SET SESSION work_mem=%s;", (args.work_mem*1024,))
+        cur.execute("SET SESSION work_mem=%s;", (args.work_mem*1024,))
 
     if args.maintenance_work_mem != 0:
-            cur.execute("SET SESSION maintenance_work_mem=%s;",
-                        (args.maintenance_work_mem*1024,))
+        cur.execute("SET SESSION maintenance_work_mem=%s;",
+                    (args.maintenance_work_mem*1024,))
 
     ttis_files = {x[-3:]: x for x in ttis.namelist()}
 
