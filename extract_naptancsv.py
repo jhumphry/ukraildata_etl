@@ -21,15 +21,16 @@
 ''' extract_naptancsv.py - a utility for extracting rail data from data.gov.uk
     NaPTAN (CSV format) downloads into a PostgreSQL database'''
 
-import nrcif._mockdb
-
-import psycopg2
-
 import sys
 import os
 import argparse
 import zipfile
 import contextlib
+
+import psycopg2
+
+import nrcif._mockdb
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("NaPTAN", help="The NaPTAN .zip file containing the "

@@ -21,12 +21,12 @@
 ''' create_functions.py - creates various useful functions in a database
     containing UK rail data.'''
 
-import nrcif._mockdb
+import os
+import argparse
 
 import psycopg2
 
-import os
-import argparse
+import nrcif._mockdb
 
 parser = argparse.ArgumentParser()
 parser.add_argument("source_path",

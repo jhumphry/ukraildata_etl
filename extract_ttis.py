@@ -21,6 +21,14 @@
 ''' extract_ttis.py - a utility for extracting data from data.atoc.org TTIS
     downloads into a PostgreSQL database'''
 
+import sys
+import os
+import argparse
+import zipfile
+import contextlib
+
+import psycopg2
+
 import nrcif.mca_reader
 import nrcif.ztr_reader
 import nrcif.msn_reader
@@ -28,13 +36,6 @@ import nrcif.tsi_reader
 import nrcif.alf_reader
 import nrcif._mockdb
 
-import psycopg2
-
-import sys
-import os
-import argparse
-import zipfile
-import contextlib
 
 parser = argparse.ArgumentParser()
 parser.add_argument("TTIS",
