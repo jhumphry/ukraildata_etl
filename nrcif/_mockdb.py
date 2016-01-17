@@ -71,3 +71,19 @@ class Connection(object):
 
         if self.log_file != sys.stdout:
             self.log_file.close()
+
+
+def demonstrate_reader(reader_class):
+    '''When called as a script, the CIF_Reader classes should read a suitable
+    file and output the SQL that would be generated to stdout.'''
+
+    if len(sys.argv) != 2:
+        print("When called as a script, needs to be provided with a suitable"
+              "file to process.")
+        sys.exit(1)
+
+    reader = reader_class(Cursor())
+    with open(sys.argv[1], 'r') as input_file:
+        for line in input_file:
+            reader.process(line)
+    print("Processing complete")

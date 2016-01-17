@@ -54,19 +54,5 @@ class TSI(object):
         self.cur.execute("INSERT INTO tsi.tsi VALUES(%s,%s,%s,%s,%s);", result)
 
 
-def main():
-    import sys
-    import nrcif
-    if len(sys.argv) != 2:
-        print("When called as a script, needs to be provided with a TSI"
-              " file to process")
-        sys.exit(1)
-    cur = nrcif._mockdb.Cursor()
-    tsi = TSI(cur)
-    with open(sys.argv[1], 'r') as input_file:
-        for line in input_file:
-            tsi.process(line)
-    print("Processing complete")
-
 if __name__ == "__main__":
-    main()
+    nrcif._mockdb.demonstrate_reader(TSI)

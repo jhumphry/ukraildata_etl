@@ -65,18 +65,5 @@ class ZTR(nrcif.mca_reader.MCA):
         super().__init__(cur)
 
 
-def main():
-    import sys
-    if len(sys.argv) != 2:
-        print("When called as a script, needs to be provided with a "
-              "ZTR file to process")
-        sys.exit(1)
-    cur = nrcif._mockdb.Cursor()
-    ztr = ZTR(cur)
-    with open(sys.argv[1], 'r') as input_file:
-        for line in input_file:
-            ztr.process(line)
-    print("Processing complete")
-
 if __name__ == "__main__":
-    main()
+    nrcif._mockdb.demonstrate_reader(ZTR)

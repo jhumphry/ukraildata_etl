@@ -200,22 +200,5 @@ class MCA(nrcif.CIFReader):
                                           self.LOC_order,
                                           self.xmidnight] + self.context["LN"])
 
-
-def main():
-    '''When called as a script, read an MCA file and output the SQL that would
-    be generated to stdout.'''
-
-    import sys
-    if len(sys.argv) != 2:
-        print("When called as a script, needs to be provided with an "
-              "MCA file to process")
-        sys.exit(1)
-    cur = nrcif._mockdb.Cursor()
-    mca = MCA(cur)
-    with open(sys.argv[1], 'r') as input_file:
-        for line in input_file:
-            mca.process(line)
-    print("Processing complete")
-
 if __name__ == "__main__":
-    main()
+    nrcif._mockdb.demonstrate_reader(MCA)

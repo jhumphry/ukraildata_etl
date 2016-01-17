@@ -72,19 +72,5 @@ class ALF(object):
         self.cur.execute(self.sql_insert, result)
 
 
-def main():
-    import sys
-    import nrcif
-    if len(sys.argv) != 2:
-        print("When called as a script, needs to be provided with an "
-              "ALF file to process")
-        sys.exit(1)
-    cur = nrcif._mockdb.Cursor()
-    alf = ALF(cur)
-    with open(sys.argv[1], 'r') as input_file:
-        for line in input_file:
-            alf.process(line)
-    print("Processing complete")
-
 if __name__ == "__main__":
-    main()
+    nrcif._mockdb.demonstrate_reader(ALF)
