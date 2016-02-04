@@ -125,8 +125,8 @@ This script extracts data on rail stations from NAtional Public Transport
 Access Nodes database dumps supplied in `.csv` format inside a `.zip`
 container. These are available from data.gov.uk. While most of the data
 relates to bus transport, there is one file that gives information on rail
-stations that may be of higher quality than the `.msn` files supplied by ATOC
-- for example the station names are nicer and the station locations seem to be
+stations that may be of higher quality than the `.msn` files supplied by ATOC:
+for example the station names are nicer and the station locations seem to be
 specified with greater than 100m accuracy.
 
 The script will create and populate its own schema so there is no
