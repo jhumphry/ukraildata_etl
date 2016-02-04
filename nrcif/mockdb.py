@@ -71,6 +71,8 @@ class Connection(object):
         '''Close the dummy database object. Closes the file associated with
         the object unless that is sys.stdout.'''
 
+        self.log_file.write("Closing connection\n")
+        self.log_file.flush()
         if self.log_file != sys.stdout:
             self.log_file.close()
 
