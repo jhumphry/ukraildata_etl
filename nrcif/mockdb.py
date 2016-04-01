@@ -42,6 +42,29 @@ class Cursor(object):
         self.log_file.write("Executed SQL: '{}' with params '{}'\n"
                             .format(sql, repr(params)))
 
+    def copy_from(self, file, table, sep='\t',
+                  null='\\N', size=8192, columns=None):
+        '''Log a request to execute a COPY command to upload bulk data. This
+        is a Postgresql-specific command'''
+
+        self.log_file.write("Executed a COPY from file '{}' to table: '{}'"
+                            " with params {}\n"
+                            .format(file.name,
+                                    table,
+                                    repr((sep, null, size, columns)))
+                            )
+
+    def copy_expert(self, sql, file, size=8192):
+        '''Log a request to execute a COPY command to upload bulk data. This
+        is a Postgresql-specific command'''
+
+        self.log_file.write("Executed a COPY from file '{}' using SQL: '{}'"
+                            " with size '{}'\n"
+                            .format(file.name,
+                                    sql,
+                                    repr(size))
+                            )
+
     def close(self):
         '''Close the dummy database cursor object. Does not close the
         associated output file.'''
@@ -55,6 +78,17 @@ class Connection(object):
 
     def __init__(self, log_file=sys.stdout):
         self.log_file = log_file
+        self._autocommit = False
+
+    def set_autocommit(self, value):
+        '''Log an attempt to change the autocommit mode of the mock database
+        connection object'''
+
+        self._autocommit = value
+        self.log_file.write("Set autocommit status to: {}\n".format(value))
+        self.log_file.flush()
+
+    autocommit = property(fset=set_autocommit)
 
     def cursor(self):
         '''Create a dummy cursor which uses the same output file.'''
