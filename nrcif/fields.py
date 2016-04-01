@@ -30,7 +30,7 @@ class CIFField(object):
     '''A base class for fields in a record of a fixed-format CIF file'''
 
     sql_type = None
-    py_type = None
+    py_type = type(None)
 
     def __init__(self, name, width):
         self.name = name
@@ -143,7 +143,7 @@ class FlagField(CIFField):
         self.flags = flags
 
     def read(self, text):
-        if len(text) != 1 or not (text in self.flags):
+        if (len(text) != 1) or (text not in self.flags):
             raise ValueError("'{}' is not one of the allowed flags '{}'"
                              " for field '{}'"
                              .format(text, self.flags, self.name))

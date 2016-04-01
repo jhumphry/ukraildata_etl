@@ -23,7 +23,11 @@
 This module defines the record types found in most National Rail CIF format
 files containing UK rail timetable data.'''
 
-from nrcif.fields import *
+from nrcif.fields import ActivityField, EnforceField, FlagField, SpareField
+from nrcif.fields import DDMMYYDateField, YYMMDDDateField, DaysField
+from nrcif.fields import TimeField, TimeHField
+from nrcif.fields import IntegerField, TextField, VarTextField
+
 from nrcif import CIFRecord
 
 # The following is a dictionary of standard CIF record types, keyed by the two

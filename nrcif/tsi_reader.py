@@ -25,7 +25,7 @@ information on the interchange times between train companies at certain
 TOCs (for example, where a particular company has its own set of
 platforms at some distance from the others.'''
 
-from nrcif.fields import *
+from nrcif.fields import TextField, IntegerField, VarTextField
 import nrcif.mockdb
 
 
