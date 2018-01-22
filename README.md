@@ -187,7 +187,7 @@ described in the section below.
 
 ### `plot_isochron.py`
 
-This script takes the output from the util.isochron_latlon function and plots
+This script takes the output from the `util.isochron_latlon` function and plots
 isochron contours on a map of the United Kingdom. It requires the Basemap
 extension to Matplotlib.
 
