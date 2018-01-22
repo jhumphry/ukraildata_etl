@@ -59,6 +59,11 @@ parser_db.add_argument("--host", help="PostgreSQL host (if using TCP/IP)",
                        action="store", default=None)
 parser_db.add_argument("--port", help="PostgreSQL port (if required)",
                        action="store", type=int, default=5432)
+parser_db.add_argument("--work-mem", help="Size of working memory in MB",
+                       action="store", type=int, default=0)
+parser_db.add_argument("--max-parallel", "-j",  
+                       help="Maximum parallel workers for gather operations",
+                       action="store", type=int, default=0)                       
 args = parser.parse_args()
 
 if args.host:
@@ -86,6 +91,14 @@ label_cities = set(('CAMBDGE', 'EDINBUR', 'KNGX   ',
 cities = dict()
 
 with connection.cursor() as cur:
+    
+    if args.work_mem != 0:
+        cur.execute("SET SESSION work_mem=%s;", (args.work_mem*1024,))
+    
+    if args.max_parallel != 0:
+        cur.execute("SET SESSION max_parallel_workers_per_gather=%s;",
+         (args.max_parallel,))   
+    
     cur.callproc('msn.find_station', (args.STATION,))
     station = cur.fetchone()[0]
     if not station:

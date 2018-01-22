@@ -40,4 +40,4 @@ BEGIN
     DROP TABLE isochron_tt;
 END;
 $IC$
-LANGUAGE 'plpgsql';
+LANGUAGE 'plpgsql' PARALLEL UNSAFE;
