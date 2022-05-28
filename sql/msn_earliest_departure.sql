@@ -20,4 +20,5 @@ BEGIN
 END
 $ED$
 STABLE
-LANGUAGE 'plpgsql';
+LANGUAGE 'plpgsql' 
+PARALLEL SAFE;

@@ -22,7 +22,7 @@ BEGIN
     RETURN M;
 END;
 $EN$
-LANGUAGE plpgsql IMMUTABLE;
+LANGUAGE plpgsql IMMUTABLE PARALLEL SAFE;
 
 DROP FUNCTION IF EXISTS util.natgrid_en_to_latlon(
     E double precision,
@@ -125,4 +125,4 @@ BEGIN
 
 END;
 $EN$
-LANGUAGE plpgsql IMMUTABLE;
+LANGUAGE plpgsql IMMUTABLE PARALLEL SAFE;

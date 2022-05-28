@@ -50,4 +50,4 @@ RETURNS TABLE ( train_uid character(6),
         LEFT JOIN msn.station_detail AS sd ON (sd.tiploc_code = location)
     ORDER BY loc_order
 
-$$ STABLE LANGUAGE SQL;
+$$ STABLE LANGUAGE SQL PARALLEL SAFE;

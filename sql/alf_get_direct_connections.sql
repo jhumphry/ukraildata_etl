@@ -66,4 +66,4 @@ BEGIN
 END;
 $B$
 STABLE
-LANGUAGE 'plpgsql' ;
+LANGUAGE 'plpgsql' PARALLEL SAFE;

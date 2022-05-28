@@ -107,4 +107,4 @@ RETURNS TABLE ( train_uid character(6),
         INNER JOIN bs_p USING (train_uid, date_runs_from, stp_indicator)
     ORDER BY train_uid, loc_order
 
-$$ STABLE LANGUAGE SQL;
+$$ STABLE LANGUAGE SQL PARALLEL SAFE;

@@ -26,4 +26,4 @@ BEGIN
 	END LOOP;
 END;
 $IC$
-LANGUAGE 'plpgsql';
+LANGUAGE 'plpgsql' PARALLEL UNSAFE;

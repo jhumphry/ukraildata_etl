@@ -95,4 +95,4 @@ BEGIN
 END;
 
 $IR$
-LANGUAGE 'plpgsql' ;
+LANGUAGE 'plpgsql' PARALLEL UNSAFE;

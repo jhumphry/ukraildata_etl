@@ -1,19 +1,20 @@
 # UKRailData_ETL
 
-This project aims to load the UK rail timetable and station data provided by
-the Association of Train Operating Companies (at data.atoc.org) into
-PostgreSQL so that it can be analysed more easily. The data provided by ATOC
-is a .zip file containing a mixture of formats which have a certain degree of
-quirkiness. The publicly available documentation for these formats varies in
-its existence, thoroughness and accuracy. This project only aims to extract
-the basic data from the files into a database while maintaining its basic
-structure, and from there the parts of the data that are useful for your
-specific purposes can be extracted.
+This project aims to load the UK rail timetable and station data provided by 
+the Association of Train Operating Companies (at 
+[data.atoc.org](http://data.atoc.org) ) into PostgreSQL so that it can be 
+analysed more easily. The data provided by ATOC is a .zip file containing a 
+mixture of formats which have a certain degree of quirkiness. The publicly 
+available documentation for these formats varies in its existence, thoroughness 
+and accuracy. This project only aims to extract the basic data from the files 
+into a database while maintaining its basic structure, and from there the parts 
+of the data that are useful for your specific purposes can be extracted.
 
-It was developed on Python 3.4, but should also work with Python 3.2 or 3.3.
-The Psycopg (2.5+) package is required to upload the results to the PostgreSQL
-database. It is advisable to use the latest stable version of PostgreSQL, and
-versions before 9.1 may not work at all.
+It was developed on Python 3.4, but should also work with Python 3.2 or 3.3. 
+The Psycopg (2.5+) package is required to upload the results to the PostgreSQL 
+database. It is advisable to use the latest stable version of PostgreSQL, and 
+versions before 10.1 may not work at all. The most recent versions attempt to 
+take advantage of the parallel query processing features where possible.
 
 ### Note
 
@@ -194,6 +195,7 @@ extension to Matplotlib.
     $ python3 plot_isochron.py --help
     usage: plot_isochron.py [-h] [--no-labels] [--database DATABASE] [--user USER]
                             [--password PASSWORD] [--host HOST] [--port PORT]
+                            [--work-mem WORK_MEM] [--max-parallel MAX_PARALLEL]
                             STATION DEPARTURE
 
     positional arguments:
@@ -211,7 +213,10 @@ extension to Matplotlib.
       --password PASSWORD  PostgreSQL user password
       --host HOST          PostgreSQL host (if using TCP/IP)
       --port PORT          PostgreSQL port (if required)
-
+      --work-mem WORK_MEM  Size of working memory in MB
+      --max-parallel MAX_PARALLEL, -j MAX_PARALLEL
+                           Maximum parallel workers for gather operations
+                           
 It may take between thirty seconds and a few minutes to prepare the
 data and calculate the contours. A typical invocation might be:
 
