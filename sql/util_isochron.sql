@@ -24,8 +24,8 @@ BEGIN
     ANALYZE isochron_tt;
 
     RETURN QUERY SELECT ir.location,
-            EXTRACT(hours from (ir.earliest_arrival - depart)) +
-            EXTRACT(minutes from (ir.earliest_arrival - depart)) / 60.0 AS delay,
+            date_part('hour', (ir.earliest_arrival - depart)) +
+            date_part('minute', (ir.earliest_arrival - depart)) / 60.0 AS delay,
             sd.easting*100-1000000 AS easting,
             sd.northing*100-6000000 AS northing
         FROM util.iterate_reachable('isochron_tt',
