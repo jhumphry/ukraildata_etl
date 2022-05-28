@@ -367,8 +367,8 @@ information from this file is not uploaded.
 ## Performance tips
 
 Scanning through the files and generating the SQL necessary to insert the data
-generally takes around three minutes on my laptop whereas actually inserting
-the data takes at least eight times as long. Creating indexes after the data
+generally takes less than a minute on my laptop whereas actually inserting
+the data takes about seven times as long. Creating indexes after the data
 is loaded is only around one minute. The good news is that once the data is
 loaded and indexed, subsequent processing should be substantially faster.
 
